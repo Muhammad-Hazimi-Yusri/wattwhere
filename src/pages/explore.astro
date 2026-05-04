@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Basemap from '../components/map/Basemap.tsx';
+import Legend from '../components/ui/Legend.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -19,6 +20,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   <body class="m-0 p-0 overflow-hidden">
     <main class="fixed inset-0">
       <Basemap client:only="react" />
+      <Legend client:load />
     </main>
   </body>
 </html>

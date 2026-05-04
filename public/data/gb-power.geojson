@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[],"metadata":{"note":"empty seed; populated by data-pipeline/fetch-osm-power.ts via .github/workflows/refresh-data.yml or `npm run data:osm` locally","source":"OpenStreetMap via Overpass API","licence":"ODbL 1.0","attribution":"© OpenStreetMap contributors"}}

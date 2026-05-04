@@ -51,6 +51,16 @@ jobs:
           BUILD_DATE: ${{ env.PMTILES_BUILD_DATE }}
         run: ./data-pipeline/extract-pmtiles.sh
 
+      - name: Populate GB power data if seed is empty
+        run: |
+          count=$(jq '.features | length' public/data/gb-power.geojson)
+          if [ "$count" = "0" ]; then
+            echo "seed file empty; fetching from OSM"
+            npm run data:osm
+          else
+            echo "using committed gb-power.geojson ($count features)"
+          fi
+
       - run: npm run build
         env:
           BASE_PATH: /wattwhere

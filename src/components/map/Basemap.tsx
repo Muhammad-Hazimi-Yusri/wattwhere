@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
+import maplibregl, { type Map as MlMap } from 'maplibre-gl';
 import { Protocol } from 'pmtiles';
-import { layers, namedTheme } from 'protomaps-themes-base';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { buildStyle } from './style';
 
 let pmtilesProtocolRegistered = false;
 function registerPmtilesProtocol(): void {
@@ -12,26 +12,17 @@ function registerPmtilesProtocol(): void {
   pmtilesProtocolRegistered = true;
 }
 
-function buildStyle(tilesUrl: string): StyleSpecification {
-  return {
-    version: 8,
-    glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
-    sprite: 'https://protomaps.github.io/basemaps-assets/sprites/v4/dark',
-    sources: {
-      protomaps: {
-        type: 'vector',
-        url: `pmtiles://${tilesUrl}`,
-        attribution:
-          '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>, © <a href="https://protomaps.com">Protomaps</a>',
-      },
-    },
-    layers: layers('protomaps', namedTheme('dark'), { lang: 'en' }),
-  };
+function normaliseBaseUrl(): string {
+  return import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
 }
 
 export interface BasemapProps {
   /** Absolute URL to the PMTiles archive. Defaults to `${BASE_URL}tiles/gb.pmtiles`. */
   tilesUrl?: string;
+  /** Absolute URL to the power infra GeoJSON. Defaults to `${BASE_URL}data/gb-power.geojson`. */
+  dataUrl?: string;
   /** Initial centre [lon, lat]. Defaults to GB centre. */
   center?: [number, number];
   /** Initial zoom. */
@@ -40,6 +31,7 @@ export interface BasemapProps {
 
 export default function Basemap({
   tilesUrl,
+  dataUrl,
   center = [-2.5, 54.5],
   zoom = 5.5,
 }: BasemapProps): JSX.Element {
@@ -51,14 +43,13 @@ export default function Basemap({
     if (!containerRef.current) return;
     registerPmtilesProtocol();
 
-    const baseUrl = import.meta.env.BASE_URL.endsWith('/')
-      ? import.meta.env.BASE_URL
-      : `${import.meta.env.BASE_URL}/`;
-    const resolved = tilesUrl ?? `${window.location.origin}${baseUrl}tiles/gb.pmtiles`;
+    const baseUrl = normaliseBaseUrl();
+    const tiles = tilesUrl ?? `${window.location.origin}${baseUrl}tiles/gb.pmtiles`;
+    const data = dataUrl ?? `${baseUrl}data/gb-power.geojson`;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: buildStyle(resolved),
+      style: buildStyle(tiles, data),
       center,
       zoom,
       minZoom: 4,
@@ -70,7 +61,6 @@ export default function Basemap({
     map.on('error', (e) => {
       const msg = e.error?.message ?? 'map error';
       setError(msg);
-      // Surface to console for debugging without throwing.
       console.warn('[basemap]', msg);
     });
     mapRef.current = map;
@@ -79,7 +69,7 @@ export default function Basemap({
       map.remove();
       mapRef.current = null;
     };
-  }, [tilesUrl, center, zoom]);
+  }, [tilesUrl, dataUrl, center, zoom]);
 
   return (
     <div className="absolute inset-0">
@@ -89,9 +79,7 @@ export default function Basemap({
           role="status"
           className="absolute bottom-4 left-4 max-w-sm rounded-md bg-black/80 px-3 py-2 text-xs text-white shadow"
         >
-          Basemap data unavailable. Tile extract may be missing — see
-          {' '}
-          <code>data-pipeline/extract-pmtiles.sh</code>.
+          Map data unavailable. See <code>data-pipeline/</code> scripts.
         </div>
       )}
     </div>
