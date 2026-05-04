@@ -1,0 +1,28 @@
+{
+  "name": "wattwhere",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A static, scrolly + dashboard explainer of the GB electricity grid and market.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.2.6",
+    "@astrojs/react": "^4.2.4",
+    "@astrojs/tailwind": "^6.0.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "astro": "^5.7.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6.3"
+  }
+}

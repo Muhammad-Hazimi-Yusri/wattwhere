@@ -1,0 +1,29 @@
+---
+import '../styles/global.css';
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A scrolly + dashboard explainer of the GB electricity grid and market." />
+    <title>wattwhere — coming soon</title>
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body class="min-h-screen flex items-center justify-center px-6">
+    <main class="max-w-xl text-center space-y-4">
+      <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight">
+        wattwhere
+      </h1>
+      <p class="text-lg text-[color:var(--muted)]">
+        A scrolly + dashboard explainer of the GB electricity grid and market.
+      </p>
+      <p class="text-sm text-[color:var(--muted)]">coming soon</p>
+    </main>
+  </body>
+</html>
