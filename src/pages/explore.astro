@@ -1,0 +1,24 @@
+---
+import '../styles/global.css';
+import Basemap from '../components/map/Basemap.tsx';
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Explore the GB electricity grid live." />
+    <title>wattwhere · explore</title>
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body class="m-0 p-0 overflow-hidden">
+    <main class="fixed inset-0">
+      <Basemap client:only="react" />
+    </main>
+  </body>
+</html>
