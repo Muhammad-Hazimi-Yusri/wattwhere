@@ -1,0 +1,79 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  PMTILES_VERSION: "1.22.1"
+  PMTILES_BUILD_DATE: "20260501"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Cache GB PMTiles extract
+        id: cache-pmtiles
+        uses: actions/cache@v4
+        with:
+          path: public/tiles/gb.pmtiles
+          key: pmtiles-gb-${{ env.PMTILES_BUILD_DATE }}-z10-v1
+
+      - name: Install go-pmtiles binary
+        if: steps.cache-pmtiles.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/pmtiles.tar.gz \
+            "https://github.com/protomaps/go-pmtiles/releases/download/v${PMTILES_VERSION}/go-pmtiles_${PMTILES_VERSION}_Linux_x86_64.tar.gz"
+          tar -xzf /tmp/pmtiles.tar.gz -C /tmp pmtiles
+          sudo mv /tmp/pmtiles /usr/local/bin/pmtiles
+          pmtiles version
+
+      - name: Extract GB PMTiles
+        if: steps.cache-pmtiles.outputs.cache-hit != 'true'
+        env:
+          BUILD_DATE: ${{ env.PMTILES_BUILD_DATE }}
+        run: ./data-pipeline/extract-pmtiles.sh
+
+      - name: Populate GB power data if seed is empty
+        run: |
+          count=$(jq '.features | length' public/data/gb-power.geojson)
+          if [ "$count" = "0" ]; then
+            echo "seed file empty; fetching from OSM"
+            npm run data:osm
+          else
+            echo "using committed gb-power.geojson ($count features)"
+          fi
+
+      - run: npm run build
+        env:
+          BASE_PATH: /wattwhere
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
