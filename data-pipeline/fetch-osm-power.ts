@@ -70,7 +70,11 @@ async function fetchOverpass(): Promise<OsmResponse> {
   for (let attempt = 1; attempt <= 4; attempt++) {
     const res = await fetch(OVERPASS_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'User-Agent': 'wattwhere/0.0.1 (+https://github.com/Muhammad-Hazimi-Yusri/wattwhere)',
+      },
       body,
     });
     if (res.ok) return (await res.json()) as OsmResponse;
