@@ -1,4 +1,4 @@
-name: Refresh OSM power data
+name: Refresh OSM power data and DNO regions
 
 on:
   schedule:
@@ -24,14 +24,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run data:osm
+      - run: npm run data:regions
       - name: Commit if changed
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          if git diff --quiet -- public/data/gb-power.geojson; then
+          if git diff --quiet -- public/data/gb-power.geojson public/data/gb-regions.geojson; then
             echo "no changes"
           else
-            git add public/data/gb-power.geojson
-            git commit -m "data: refresh GB power infrastructure from OSM"
+            git add public/data/gb-power.geojson public/data/gb-regions.geojson
+            git commit -m "data: refresh GB power infra (OSM) and DNO regions (NESO)"
             git push
           fi

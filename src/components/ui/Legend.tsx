@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {
+  CARBON_INTENSITY_COLOURS,
+  CARBON_INTENSITY_INDEXES,
   PLANT_SOURCE_COLOURS,
   SUBSTATION_COLOUR,
   VOLTAGE_COLOURS,
@@ -76,6 +78,27 @@ export default function Legend(): JSX.Element {
           ×
         </button>
       </header>
+
+      <section className="mb-3">
+        <h3 className="mb-1 text-[10px] font-medium uppercase text-white/50">
+          Carbon intensity (gCO₂/kWh)
+        </h3>
+        <div className="flex h-3 overflow-hidden rounded-sm ring-1 ring-white/20">
+          {CARBON_INTENSITY_INDEXES.map((idx) => (
+            <span
+              key={idx}
+              className="block h-full flex-1"
+              style={{ background: CARBON_INTENSITY_COLOURS[idx] }}
+              title={idx}
+              aria-label={idx}
+            />
+          ))}
+        </div>
+        <div className="mt-1 flex justify-between text-[10px] text-white/60">
+          <span>very low</span>
+          <span>very high</span>
+        </div>
+      </section>
 
       <section className="mb-3">
         <h3 className="mb-1 text-[10px] font-medium uppercase text-white/50">
