@@ -18,7 +18,7 @@ concurrency:
 
 env:
   PMTILES_VERSION: "1.22.1"
-  PMTILES_BUILD_DATE: "20260508"
+  PMTILES_BUILD_DATE: "20260509"
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: public/tiles/gb.pmtiles
-          key: pmtiles-gb-${{ env.PMTILES_BUILD_DATE }}-z10-v1
+          key: pmtiles-gb-${{ env.PMTILES_BUILD_DATE }}-z9-v1
 
       - name: Install go-pmtiles binary
         if: steps.cache-pmtiles.outputs.cache-hit != 'true'

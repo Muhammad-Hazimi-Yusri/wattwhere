@@ -16,7 +16,7 @@ set -euo pipefail
 # GB bounding box: includes Great Britain + Northern Ireland + Channel Isles.
 # minLon, minLat, maxLon, maxLat
 BBOX="${BBOX:--8.7,49.5,2.1,61.1}"
-MAXZOOM="${MAXZOOM:-10}"
+MAXZOOM="${MAXZOOM:-9}"
 
 # Pin to a recent Protomaps daily build. Daily builds are published at
 # https://build.protomaps.com/{YYYYMMDD}.pmtiles (ODbL); older builds are
