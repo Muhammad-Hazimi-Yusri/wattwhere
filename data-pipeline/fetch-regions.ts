@@ -33,9 +33,28 @@ const NESO_URL =
 
 const SIMPLIFY_TOLERANCE_DEG = Number(process.env.REGIONS_TOLERANCE ?? '0.01');
 
-// LongName (NESO file) → regionid (api.carbonintensity.org.uk).
-// Multiple aliases per id cover historical/legal name variants.
+// Maps the NESO file's DNO identifier → regionid used by
+// api.carbonintensity.org.uk. NESO uses the standard MPAN distributor
+// letter codes (`_A`–`_N`, `_P`; `I` and `O` are skipped to avoid
+// confusion with 1/0). Legal-name aliases stay as a fallback in case a
+// future revision of the file ships full names instead of letter codes.
 const LONGNAME_TO_REGIONID: Record<string, number> = {
+  // Letter codes (current 2024 NESO file)
+  _P: 1,
+  _N: 2,
+  _G: 3,
+  _F: 4,
+  _M: 5,
+  _D: 6,
+  _K: 7,
+  _E: 8,
+  _B: 9,
+  _A: 10,
+  _L: 11,
+  _H: 12,
+  _C: 13,
+  _J: 14,
+  // Legal-name fallbacks
   'Scottish Hydro Electric Power Distribution': 1,
   'SP Distribution': 2,
   'Electricity North West': 3,
