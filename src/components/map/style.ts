@@ -1,10 +1,19 @@
 import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
 import { layers as protomapsLayers, namedTheme } from 'protomaps-themes-base';
-import { PLANT_SOURCE_COLOURS, SUBSTATION_COLOUR, VOLTAGE_COLOURS } from '../../lib/style/palette';
+import {
+  CARBON_INTENSITY_UNAVAILABLE_COLOUR,
+  PLANT_SOURCE_COLOURS,
+  SUBSTATION_COLOUR,
+  VOLTAGE_COLOURS,
+} from '../../lib/style/palette';
 
 const BASEMAP_ATTRIBUTION =
   '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>, © <a href="https://protomaps.com">Protomaps</a>';
 const POWER_ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
+const CARBON_ATTRIBUTION =
+  'Carbon © <a href="https://www.carbonintensity.org.uk/">National Grid ESO</a> CC-BY 4.0; boundaries © NESO';
+
+export const CARBON_FILL_LAYER_ID = 'gb-carbon-region-fill';
 
 function powerLayers(): LayerSpecification[] {
   const lines: LayerSpecification = {
@@ -93,7 +102,34 @@ function powerLayers(): LayerSpecification[] {
   return [lines, substations, plants];
 }
 
-export function buildStyle(tilesUrl: string, dataUrl: string): StyleSpecification {
+function carbonRegionLayers(): LayerSpecification[] {
+  const fill: LayerSpecification = {
+    id: CARBON_FILL_LAYER_ID,
+    source: 'gb-regions',
+    type: 'fill',
+    paint: {
+      'fill-color': CARBON_INTENSITY_UNAVAILABLE_COLOUR,
+      'fill-opacity': 0.45,
+    },
+  };
+  const outline: LayerSpecification = {
+    id: 'gb-carbon-region-outline',
+    source: 'gb-regions',
+    type: 'line',
+    paint: {
+      'line-color': '#000',
+      'line-opacity': 0.45,
+      'line-width': 0.6,
+    },
+  };
+  return [fill, outline];
+}
+
+export function buildStyle(
+  tilesUrl: string,
+  dataUrl: string,
+  regionsUrl: string,
+): StyleSpecification {
   const base = protomapsLayers('protomaps', namedTheme('dark'), { lang: 'en' });
   return {
     version: 8,
@@ -105,12 +141,17 @@ export function buildStyle(tilesUrl: string, dataUrl: string): StyleSpecificatio
         url: `pmtiles://${tilesUrl}`,
         attribution: BASEMAP_ATTRIBUTION,
       },
+      'gb-regions': {
+        type: 'geojson',
+        data: regionsUrl,
+        attribution: CARBON_ATTRIBUTION,
+      },
       'gb-power': {
         type: 'geojson',
         data: dataUrl,
         attribution: POWER_ATTRIBUTION,
       },
     },
-    layers: [...base, ...powerLayers()],
+    layers: [...base, ...carbonRegionLayers(), ...powerLayers()],
   };
 }

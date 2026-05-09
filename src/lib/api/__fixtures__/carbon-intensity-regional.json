@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "from": "2026-05-09T16:30Z",
+      "to": "2026-05-09T17:00Z",
+      "regions": [
+        { "regionid": 1, "dnoregion": "Scottish Hydro Electric Power Distribution", "shortname": "North Scotland", "intensity": { "forecast": 38, "index": "very low" } },
+        { "regionid": 2, "dnoregion": "SP Distribution", "shortname": "South Scotland", "intensity": { "forecast": 72, "index": "low" } },
+        { "regionid": 3, "dnoregion": "Electricity North West", "shortname": "North West England", "intensity": { "forecast": 168, "index": "moderate" } },
+        { "regionid": 4, "dnoregion": "NPg North East", "shortname": "North East England", "intensity": { "forecast": 142, "index": "moderate" } },
+        { "regionid": 5, "dnoregion": "NPg Yorkshire", "shortname": "Yorkshire", "intensity": { "forecast": 156, "index": "moderate" } },
+        { "regionid": 6, "dnoregion": "SP Manweb", "shortname": "North Wales", "intensity": { "forecast": 95, "index": "low" } },
+        { "regionid": 7, "dnoregion": "WPD South Wales", "shortname": "South Wales", "intensity": { "forecast": 110, "index": "low" } },
+        { "regionid": 8, "dnoregion": "WPD West Midlands", "shortname": "West Midlands", "intensity": { "forecast": 178, "index": "moderate" } },
+        { "regionid": 9, "dnoregion": "WPD East Midlands", "shortname": "East Midlands", "intensity": { "forecast": 192, "index": "high" } },
+        { "regionid": 10, "dnoregion": "UK Power Networks Eastern", "shortname": "East England", "intensity": { "forecast": 205, "index": "high" } },
+        { "regionid": 11, "dnoregion": "WPD South West", "shortname": "South West England", "intensity": { "forecast": 87, "index": "low" } },
+        { "regionid": 12, "dnoregion": "Scottish and Southern Electricity Networks Southern", "shortname": "South England", "intensity": { "forecast": 152, "index": "moderate" } },
+        { "regionid": 13, "dnoregion": "UK Power Networks London", "shortname": "London", "intensity": { "forecast": 248, "index": "very high" } },
+        { "regionid": 14, "dnoregion": "UK Power Networks South Eastern", "shortname": "South East England", "intensity": { "forecast": 211, "index": "high" } }
+      ]
+    }
+  ]
+}

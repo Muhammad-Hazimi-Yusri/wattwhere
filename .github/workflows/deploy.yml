@@ -31,6 +31,8 @@ jobs:
           cache: npm
       - run: npm ci
 
+      - run: npm test
+
       - name: Cache GB PMTiles extract
         id: cache-pmtiles
         uses: actions/cache@v4
@@ -61,6 +63,16 @@ jobs:
             npm run data:osm
           else
             echo "using committed gb-power.geojson ($count features)"
+          fi
+
+      - name: Populate GB DNO regions if seed is empty
+        run: |
+          count=$(jq '.features | length' public/data/gb-regions.geojson)
+          if [ "$count" = "0" ]; then
+            echo "regions seed empty; fetching from NESO"
+            npm run data:regions
+          else
+            echo "using committed gb-regions.geojson ($count features)"
           fi
 
       - run: npm run build
