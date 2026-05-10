@@ -13,7 +13,9 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "data:osm": "tsx data-pipeline/fetch-osm-power.ts",
-    "data:regions": "tsx data-pipeline/fetch-regions.ts"
+    "data:regions": "tsx data-pipeline/fetch-regions.ts",
+    "data:pmtiles": "bash data-pipeline/extract-pmtiles.sh",
+    "data:bootstrap": "npm run data:pmtiles && npm run data:osm && npm run data:regions"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
