@@ -75,6 +75,17 @@ jobs:
             echo "using committed gb-regions.geojson ($count features)"
           fi
 
+      - name: Verify data artifacts
+        run: |
+          test -f public/tiles/gb.pmtiles
+          size=$(stat -c '%s' public/tiles/gb.pmtiles)
+          [ "$size" -ge 1000000 ] || { echo "gb.pmtiles is $size bytes — extract failed"; exit 1; }
+          regions=$(jq '.features | length' public/data/gb-regions.geojson)
+          [ "$regions" -ge 14 ] || { echo "gb-regions.geojson has $regions features — populate failed"; exit 1; }
+          power=$(jq '.features | length' public/data/gb-power.geojson)
+          [ "$power" -gt 0 ] || { echo "gb-power.geojson has 0 features — populate failed"; exit 1; }
+          echo "data ok: pmtiles=${size}B regions=${regions} power=${power}"
+
       - run: npm run build
         env:
           BASE_PATH: /wattwhere
