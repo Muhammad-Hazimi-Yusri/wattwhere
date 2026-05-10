@@ -62,6 +62,8 @@ export default function Basemap({
   const [snapshot, setSnapshot] = useState<RegionalSnapshot | null>(null);
   const [carbonError, setCarbonError] = useState<string | null>(null);
   const [carbonAttempt, setCarbonAttempt] = useState(0);
+  // Primitives in deps: the [-2.5, 54.5] default reallocates each render.
+  const [initialLon, initialLat] = center;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -75,7 +77,7 @@ export default function Basemap({
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: buildStyle(tiles, data, regions),
-      center,
+      center: [initialLon, initialLat],
       zoom,
       minZoom: 4,
       maxZoom: 14,
@@ -94,7 +96,7 @@ export default function Basemap({
       map.remove();
       mapRef.current = null;
     };
-  }, [tilesUrl, dataUrl, regionsUrl, center, zoom]);
+  }, [tilesUrl, dataUrl, regionsUrl, initialLon, initialLat, zoom]);
 
   useEffect(() => {
     const ctrl = new AbortController();
