@@ -4,7 +4,7 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
 const base = process.env.BASE_PATH ?? '/wattwhere';
-const site = process.env.SITE_URL ?? 'https://chronohax.github.io';
+const site = process.env.SITE_URL ?? 'https://muhammad-hazimi-yusri.github.io';
 
 export default defineConfig({
   site,

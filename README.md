@@ -21,9 +21,8 @@ Status: scaffolding (v0 in progress).
 
 ```bash
 npm install
-# One-time prerequisite: install the go-pmtiles CLI binary on your PATH from
-# https://github.com/protomaps/go-pmtiles/releases (used by data:pmtiles).
-npm run data:bootstrap   # ~1-2 min on first run; PMTiles extract is the slow part
+npm run data:bootstrap   # ~1-2 min on first run; downloads the pmtiles CLI and
+                         # extracts the GB basemap + populates the geojson data
 npm run dev              # http://localhost:4321/wattwhere/
 npm run build            # outputs to dist/
 npm run preview          # serves the production build locally
@@ -32,6 +31,9 @@ npm run preview          # serves the production build locally
 The data files under `public/tiles/gb.pmtiles` and `public/data/gb-*.geojson` are
 gitignored or committed as empty stubs — `data:bootstrap` populates them. CI does
 the same on every deploy. Re-run `data:bootstrap` whenever you want fresh data.
+The `pmtiles` CLI is auto-installed to `node_modules/.cache/pmtiles/` on first
+run (Linux/macOS; Windows users should install it manually from
+[go-pmtiles releases](https://github.com/protomaps/go-pmtiles/releases)).
 
 ## Deployment
 
