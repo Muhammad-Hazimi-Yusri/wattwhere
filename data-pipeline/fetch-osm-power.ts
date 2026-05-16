@@ -5,8 +5,7 @@
  * Run locally:    npm run data:osm
  * Run in CI:      .github/workflows/refresh-data.yml (monthly cron)
  *
- * The bbox matches data-pipeline/extract-pmtiles.sh — Great Britain plus
- * Northern Ireland and the Channel Islands.
+ * The bbox covers Great Britain plus Northern Ireland and the Channel Islands.
  *
  * OSM data is licensed ODbL 1.0. Attribution: © OpenStreetMap contributors.
  */

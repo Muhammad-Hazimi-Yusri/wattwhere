@@ -1,5 +1,4 @@
 import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
-import { layers as protomapsLayers, namedTheme } from 'protomaps-themes-base';
 import {
   CARBON_INTENSITY_UNAVAILABLE_COLOUR,
   PLANT_SOURCE_COLOURS,
@@ -8,12 +7,18 @@ import {
 } from '../../lib/style/palette';
 
 const BASEMAP_ATTRIBUTION =
-  '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>, © <a href="https://protomaps.com">Protomaps</a>';
+  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions">CARTO</a>';
 const POWER_ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
 const CARBON_ATTRIBUTION =
   'Carbon © <a href="https://www.carbonintensity.org.uk/">National Grid ESO</a> CC-BY 4.0; boundaries © NESO';
 
 export const CARBON_FILL_LAYER_ID = 'gb-carbon-region-fill';
+
+function cartoTiles(stylePath: string): string[] {
+  return ['a', 'b', 'c', 'd'].map(
+    (s) => `https://${s}.basemaps.cartocdn.com/${stylePath}/{z}/{x}/{y}{r}.png`,
+  );
+}
 
 function powerLayers(): LayerSpecification[] {
   const lines: LayerSpecification = {
@@ -126,20 +131,24 @@ function carbonRegionLayers(): LayerSpecification[] {
 }
 
 export function buildStyle(
-  tilesUrl: string,
   dataUrl: string,
   regionsUrl: string,
 ): StyleSpecification {
-  const base = protomapsLayers('protomaps', namedTheme('dark'), { lang: 'en' });
   return {
     version: 8,
-    glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
-    sprite: 'https://protomaps.github.io/basemaps-assets/sprites/v4/dark',
     sources: {
-      protomaps: {
-        type: 'vector',
-        url: `pmtiles://${tilesUrl}`,
+      'carto-base': {
+        type: 'raster',
+        tiles: cartoTiles('dark_nolabels'),
+        tileSize: 256,
+        maxzoom: 20,
         attribution: BASEMAP_ATTRIBUTION,
+      },
+      'carto-labels': {
+        type: 'raster',
+        tiles: cartoTiles('dark_only_labels'),
+        tileSize: 256,
+        maxzoom: 20,
       },
       'gb-regions': {
         type: 'geojson',
@@ -152,6 +161,11 @@ export function buildStyle(
         attribution: POWER_ATTRIBUTION,
       },
     },
-    layers: [...base, ...carbonRegionLayers(), ...powerLayers()],
+    layers: [
+      { id: 'carto-base', type: 'raster', source: 'carto-base' },
+      ...carbonRegionLayers(),
+      ...powerLayers(),
+      { id: 'carto-labels', type: 'raster', source: 'carto-labels' },
+    ],
   };
 }
