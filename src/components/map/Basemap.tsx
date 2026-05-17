@@ -132,7 +132,7 @@ export default function Basemap({
 
   return (
     <div className="absolute inset-0">
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="absolute left-0 top-0 h-screen w-screen" />
       <div
         role="status"
         className="pointer-events-auto absolute bottom-4 left-4 max-w-sm rounded-md bg-black/80 px-3 py-2 text-xs text-white shadow ring-1 ring-white/10"
