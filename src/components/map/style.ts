@@ -139,10 +139,16 @@ export function buildStyle(
     sources: {
       'carto-base': {
         type: 'raster',
-        tiles: cartoTiles('dark_all'),
+        tiles: cartoTiles('dark_nolabels'),
         tileSize: 256,
         maxzoom: 20,
         attribution: BASEMAP_ATTRIBUTION,
+      },
+      'carto-labels': {
+        type: 'raster',
+        tiles: cartoTiles('dark_only_labels'),
+        tileSize: 256,
+        maxzoom: 20,
       },
       'gb-regions': {
         type: 'geojson',
@@ -159,6 +165,7 @@ export function buildStyle(
       { id: 'carto-base', type: 'raster', source: 'carto-base' },
       ...carbonRegionLayers(),
       ...powerLayers(),
+      { id: 'carto-labels', type: 'raster', source: 'carto-labels' },
     ],
   };
 }
