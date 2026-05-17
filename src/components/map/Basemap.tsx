@@ -54,43 +54,39 @@ export default function Basemap({
   const [initialLon, initialLat] = center;
 
   useEffect(() => {
-    console.log('[basemap-debug] effect: containerRef=', !!containerRef.current, 'mapRef=', !!mapRef.current);
     if (!containerRef.current) return;
 
     const baseUrl = normaliseBaseUrl();
     const data = dataUrl ?? `${baseUrl}data/gb-power.geojson`;
     const regions = regionsUrl ?? `${baseUrl}data/gb-regions.geojson`;
-    console.log('[basemap-debug] container rect=', containerRef.current.getBoundingClientRect());
 
-    let map: MlMap;
-    try {
-      map = new maplibregl.Map({
-        container: containerRef.current,
-        style: buildStyle(data, regions),
-        center: [initialLon, initialLat],
-        zoom,
-        minZoom: 4,
-        maxZoom: 14,
-        attributionControl: { compact: true },
-        hash: false,
-      });
-      console.log('[basemap-debug] map constructor returned ok');
-    } catch (e) {
-      console.error('[basemap-debug] map constructor THREW', e);
-      return;
-    }
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: buildStyle(data, regions),
+      center: [initialLon, initialLat],
+      zoom,
+      minZoom: 4,
+      maxZoom: 14,
+      attributionControl: { compact: true },
+      hash: false,
+    });
+    // MapLibre measures the container's clientHeight at construction time
+    // and falls back to 300px if it reads as 0. Inside Astro's <astro-island>
+    // (which uses display: contents) the absolute-positioned container can
+    // report clientHeight: 0 on the first measurement even though its rendered
+    // box is full-viewport. Forcing a resize on the next frame -- after layout
+    // has finalised -- makes MapLibre re-measure and size its canvas correctly.
+    const resizeRaf = requestAnimationFrame(() => map.resize());
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    map.on('load', () => console.log('[basemap-debug] LOAD event fired'));
-    map.on('idle', () => console.log('[basemap-debug] IDLE event fired (renders done)'));
     map.on('error', (e) => {
       const msg = e.error?.message ?? 'map error';
       setError(msg);
-      console.warn('[basemap-debug] ERROR event', msg, e);
+      console.warn('[basemap]', msg);
     });
     mapRef.current = map;
 
     return () => {
-      console.log('[basemap-debug] cleanup: removing map');
+      cancelAnimationFrame(resizeRaf);
       map.remove();
       mapRef.current = null;
     };
