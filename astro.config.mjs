@@ -12,7 +12,4 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [mdx(), react(), tailwind({ applyBaseStyles: false })],
-  vite: {
-    assetsInclude: ['**/*.pmtiles'],
-  },
 });

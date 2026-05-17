@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap } from 'maplibre-gl';
-import { Protocol } from 'pmtiles';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { CARBON_FILL_LAYER_ID, buildStyle } from './style';
 import {
@@ -11,14 +10,6 @@ import {
   fetchRegional,
   type RegionalSnapshot,
 } from '../../lib/api/carbonintensity';
-
-let pmtilesProtocolRegistered = false;
-function registerPmtilesProtocol(): void {
-  if (pmtilesProtocolRegistered) return;
-  const protocol = new Protocol();
-  maplibregl.addProtocol('pmtiles', protocol.tile);
-  pmtilesProtocolRegistered = true;
-}
 
 function normaliseBaseUrl(): string {
   return import.meta.env.BASE_URL.endsWith('/')
@@ -37,8 +28,6 @@ function formatPeriod(iso: string): string {
 }
 
 export interface BasemapProps {
-  /** Absolute URL to the PMTiles archive. Defaults to `${BASE_URL}tiles/gb.pmtiles`. */
-  tilesUrl?: string;
   /** Absolute URL to the power infra GeoJSON. Defaults to `${BASE_URL}data/gb-power.geojson`. */
   dataUrl?: string;
   /** Absolute URL to the DNO regions GeoJSON. Defaults to `${BASE_URL}data/gb-regions.geojson`. */
@@ -50,7 +39,6 @@ export interface BasemapProps {
 }
 
 export default function Basemap({
-  tilesUrl,
   dataUrl,
   regionsUrl,
   center = [-2.5, 54.5],
@@ -67,16 +55,14 @@ export default function Basemap({
 
   useEffect(() => {
     if (!containerRef.current) return;
-    registerPmtilesProtocol();
 
     const baseUrl = normaliseBaseUrl();
-    const tiles = tilesUrl ?? `${window.location.origin}${baseUrl}tiles/gb.pmtiles`;
     const data = dataUrl ?? `${baseUrl}data/gb-power.geojson`;
     const regions = regionsUrl ?? `${baseUrl}data/gb-regions.geojson`;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: buildStyle(tiles, data, regions),
+      style: buildStyle(data, regions),
       center: [initialLon, initialLat],
       zoom,
       minZoom: 4,
@@ -84,6 +70,13 @@ export default function Basemap({
       attributionControl: { compact: true },
       hash: false,
     });
+    // MapLibre measures the container's clientHeight at construction time
+    // and falls back to 300px if it reads as 0. Inside Astro's <astro-island>
+    // (which uses display: contents) the absolute-positioned container can
+    // report clientHeight: 0 on the first measurement even though its rendered
+    // box is full-viewport. Forcing a resize on the next frame -- after layout
+    // has finalised -- makes MapLibre re-measure and size its canvas correctly.
+    const resizeRaf = requestAnimationFrame(() => map.resize());
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.on('error', (e) => {
       const msg = e.error?.message ?? 'map error';
@@ -93,10 +86,11 @@ export default function Basemap({
     mapRef.current = map;
 
     return () => {
+      cancelAnimationFrame(resizeRaf);
       map.remove();
       mapRef.current = null;
     };
-  }, [tilesUrl, dataUrl, regionsUrl, initialLon, initialLat, zoom]);
+  }, [dataUrl, regionsUrl, initialLon, initialLat, zoom]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -138,7 +132,7 @@ export default function Basemap({
 
   return (
     <div className="absolute inset-0">
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="absolute left-0 top-0 h-screen w-screen" />
       <div
         role="status"
         className="pointer-events-auto absolute bottom-4 left-4 max-w-sm rounded-md bg-black/80 px-3 py-2 text-xs text-white shadow ring-1 ring-white/10"

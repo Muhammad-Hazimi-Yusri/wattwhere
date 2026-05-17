@@ -2,15 +2,15 @@
 
 A static, scrolly + dashboard explainer of the GB electricity grid and market.
 
-**Live site:** https://chronohax.github.io/wattwhere/
+**Live site:** https://muhammad-hazimi-yusri.github.io/wattwhere/
 
 Status: scaffolding (v0 in progress).
 
 ## Stack
 
 - [Astro 5](https://astro.build) (static output) with MDX, React, Tailwind.
-- [MapLibre GL JS](https://maplibre.org) + [Protomaps PMTiles](https://protomaps.com)
-  for the basemap (no Mapbox token).
+- [MapLibre GL JS](https://maplibre.org) with [CARTO](https://carto.com/basemaps)
+  Dark Matter raster basemap (no Mapbox token, no API key).
 - [deck.gl](https://deck.gl) for animated arc/trip layers.
 - [Observable Plot](https://observablehq.com/plot) for time series, d3-sankey
   for the bill-flow diagram, [Scrollama](https://github.com/russellgoldenberg/scrollama)
@@ -21,19 +21,20 @@ Status: scaffolding (v0 in progress).
 
 ```bash
 npm install
-npm run data:bootstrap   # ~1-2 min on first run; downloads the pmtiles CLI and
-                         # extracts the GB basemap + populates the geojson data
 npm run dev              # http://localhost:4321/wattwhere/
 npm run build            # outputs to dist/
 npm run preview          # serves the production build locally
 ```
 
-The data files under `public/tiles/gb.pmtiles` and `public/data/gb-*.geojson` are
-gitignored or committed as empty stubs — `data:bootstrap` populates them. CI does
-the same on every deploy. Re-run `data:bootstrap` whenever you want fresh data.
-The `pmtiles` CLI is auto-installed to `node_modules/.cache/pmtiles/` on first
-run (Linux/macOS; Windows users should install it manually from
-[go-pmtiles releases](https://github.com/protomaps/go-pmtiles/releases)).
+The basemap loads directly from CARTO's CDN — no setup. The overlay data files
+under `public/data/gb-*.geojson` are committed as empty stubs; CI populates them
+on every deploy. To populate them locally for the carbon-intensity region fills
+and power infrastructure layers, run:
+
+```bash
+npm run data:bootstrap   # fetches gb-power.geojson (OSM Overpass) and
+                         # gb-regions.geojson (NESO DNO boundaries)
+```
 
 ## Deployment
 
@@ -51,6 +52,6 @@ MIT — see [`LICENSE`](./LICENSE).
 ## Attribution
 
 - Map © OpenStreetMap contributors (ODbL).
-- Basemap © Protomaps.
+- Basemap tiles © [CARTO](https://carto.com/attributions).
 - BMRS data © Elexon Limited.
 - Carbon Intensity © National Grid ESO (CC-BY 4.0).

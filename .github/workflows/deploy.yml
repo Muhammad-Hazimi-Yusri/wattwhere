@@ -16,10 +16,6 @@ concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PMTILES_VERSION: "1.22.1"
-  PMTILES_BUILD_DATE: "20260509"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,20 +28,6 @@ jobs:
       - run: npm ci
 
       - run: npm test
-
-      - name: Cache GB PMTiles extract
-        id: cache-pmtiles
-        uses: actions/cache@v4
-        with:
-          path: public/tiles/gb.pmtiles
-          key: pmtiles-gb-${{ env.PMTILES_BUILD_DATE }}-z9-v2
-
-      - name: Extract GB PMTiles
-        if: steps.cache-pmtiles.outputs.cache-hit != 'true'
-        env:
-          BUILD_DATE: ${{ env.PMTILES_BUILD_DATE }}
-          PMTILES_VERSION: ${{ env.PMTILES_VERSION }}
-        run: ./data-pipeline/extract-pmtiles.sh
 
       - name: Populate GB power data if seed is empty
         run: |
@@ -69,14 +51,11 @@ jobs:
 
       - name: Verify data artifacts
         run: |
-          test -f public/tiles/gb.pmtiles
-          size=$(stat -c '%s' public/tiles/gb.pmtiles)
-          [ "$size" -ge 1000000 ] || { echo "gb.pmtiles is $size bytes — extract failed"; exit 1; }
           regions=$(jq '.features | length' public/data/gb-regions.geojson)
           [ "$regions" -ge 14 ] || { echo "gb-regions.geojson has $regions features — populate failed"; exit 1; }
           power=$(jq '.features | length' public/data/gb-power.geojson)
           [ "$power" -gt 0 ] || { echo "gb-power.geojson has 0 features — populate failed"; exit 1; }
-          echo "data ok: pmtiles=${size}B regions=${regions} power=${power}"
+          echo "data ok: regions=${regions} power=${power}"
 
       - run: npm run build
         env:
