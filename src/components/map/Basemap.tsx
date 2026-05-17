@@ -54,31 +54,43 @@ export default function Basemap({
   const [initialLon, initialLat] = center;
 
   useEffect(() => {
+    console.log('[basemap-debug] effect: containerRef=', !!containerRef.current, 'mapRef=', !!mapRef.current);
     if (!containerRef.current) return;
 
     const baseUrl = normaliseBaseUrl();
     const data = dataUrl ?? `${baseUrl}data/gb-power.geojson`;
     const regions = regionsUrl ?? `${baseUrl}data/gb-regions.geojson`;
+    console.log('[basemap-debug] container rect=', containerRef.current.getBoundingClientRect());
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: buildStyle(data, regions),
-      center: [initialLon, initialLat],
-      zoom,
-      minZoom: 4,
-      maxZoom: 14,
-      attributionControl: { compact: true },
-      hash: false,
-    });
+    let map: MlMap;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: buildStyle(data, regions),
+        center: [initialLon, initialLat],
+        zoom,
+        minZoom: 4,
+        maxZoom: 14,
+        attributionControl: { compact: true },
+        hash: false,
+      });
+      console.log('[basemap-debug] map constructor returned ok');
+    } catch (e) {
+      console.error('[basemap-debug] map constructor THREW', e);
+      return;
+    }
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.on('load', () => console.log('[basemap-debug] LOAD event fired'));
+    map.on('idle', () => console.log('[basemap-debug] IDLE event fired (renders done)'));
     map.on('error', (e) => {
       const msg = e.error?.message ?? 'map error';
       setError(msg);
-      console.warn('[basemap]', msg);
+      console.warn('[basemap-debug] ERROR event', msg, e);
     });
     mapRef.current = map;
 
     return () => {
+      console.log('[basemap-debug] cleanup: removing map');
       map.remove();
       mapRef.current = null;
     };
