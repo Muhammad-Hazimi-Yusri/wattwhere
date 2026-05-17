@@ -13,6 +13,7 @@ import {
 } from '../style/palette';
 
 export const REGIONAL_ENDPOINT = 'https://api.carbonintensity.org.uk/regional';
+export const NATIONAL_ENDPOINT = 'https://api.carbonintensity.org.uk/intensity';
 
 export interface RegionalReading {
   regionid: number;
@@ -28,8 +29,46 @@ export interface RegionalSnapshot {
   regions: Map<number, RegionalReading>;
 }
 
+export interface NationalPoint {
+  from: string;
+  to: string;
+  forecast: number;
+  actual: number | null;
+  index: CarbonIntensityIndex;
+}
+
+export interface NationalSeries {
+  from: string;
+  to: string;
+  points: NationalPoint[];
+}
+
 interface Fetchable {
   (input: string, init?: RequestInit): Promise<Response>;
+}
+
+/**
+ * Round a Date down to the previous half-hour boundary (00 or 30 minutes,
+ * 0 ms). Matches the API's settlement-period grid.
+ */
+export function floorHalfHourUTC(d: Date): Date {
+  const ms = d.getTime();
+  return new Date(ms - (ms % (30 * 60 * 1000)));
+}
+
+/** API expects `YYYY-MM-DDThh:mmZ` (no seconds). */
+export function formatApiInstant(d: Date): string {
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  return (
+    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` +
+    `T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`
+  );
+}
+
+export function national24hUrl(now: Date = new Date()): string {
+  const end = floorHalfHourUTC(now);
+  const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+  return `${NATIONAL_ENDPOINT}/${formatApiInstant(start)}/${formatApiInstant(end)}`;
 }
 
 export async function fetchRegional(opts?: {
@@ -93,4 +132,58 @@ export function parseRegionalResponse(payload: unknown): RegionalSnapshot {
     });
   }
   return { from: period.from, to: period.to, regions };
+}
+
+export async function fetchNational24h(opts?: {
+  fetchImpl?: Fetchable;
+  signal?: AbortSignal;
+  now?: Date;
+}): Promise<NationalSeries> {
+  const fetchImpl = opts?.fetchImpl ?? fetch;
+  const url = national24hUrl(opts?.now);
+  const res = await fetchImpl(url, {
+    headers: { Accept: 'application/json' },
+    signal: opts?.signal,
+  });
+  if (!res.ok) throw new Error(`carbon intensity HTTP ${res.status}`);
+  return parseNationalSeries(await res.json());
+}
+
+export function parseNationalSeries(payload: unknown): NationalSeries {
+  const data = (payload as { data?: unknown }).data;
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error('carbon intensity: empty data array');
+  }
+  const points: NationalPoint[] = [];
+  for (const raw of data) {
+    const p = raw as {
+      from?: unknown;
+      to?: unknown;
+      intensity?: { forecast?: unknown; actual?: unknown; index?: unknown };
+    };
+    if (
+      typeof p.from !== 'string' ||
+      typeof p.to !== 'string' ||
+      typeof p.intensity?.forecast !== 'number' ||
+      !isIndex(p.intensity.index)
+    ) {
+      continue;
+    }
+    const actual = typeof p.intensity.actual === 'number' ? p.intensity.actual : null;
+    points.push({
+      from: p.from,
+      to: p.to,
+      forecast: p.intensity.forecast,
+      actual,
+      index: p.intensity.index,
+    });
+  }
+  if (points.length === 0) {
+    throw new Error('carbon intensity: no valid points');
+  }
+  return {
+    from: points[0]!.from,
+    to: points[points.length - 1]!.to,
+    points,
+  };
 }
