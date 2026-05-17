@@ -16,7 +16,7 @@ export const CARBON_FILL_LAYER_ID = 'gb-carbon-region-fill';
 
 function cartoTiles(stylePath: string): string[] {
   return ['a', 'b', 'c', 'd'].map(
-    (s) => `https://${s}.basemaps.cartocdn.com/${stylePath}/{z}/{x}/{y}{r}.png`,
+    (s) => `https://${s}.basemaps.cartocdn.com/${stylePath}/{z}/{x}/{y}.png`,
   );
 }
 
@@ -139,16 +139,10 @@ export function buildStyle(
     sources: {
       'carto-base': {
         type: 'raster',
-        tiles: cartoTiles('dark_nolabels'),
+        tiles: cartoTiles('dark_all'),
         tileSize: 256,
         maxzoom: 20,
         attribution: BASEMAP_ATTRIBUTION,
-      },
-      'carto-labels': {
-        type: 'raster',
-        tiles: cartoTiles('dark_only_labels'),
-        tileSize: 256,
-        maxzoom: 20,
       },
       'gb-regions': {
         type: 'geojson',
@@ -165,7 +159,6 @@ export function buildStyle(
       { id: 'carto-base', type: 'raster', source: 'carto-base' },
       ...carbonRegionLayers(),
       ...powerLayers(),
-      { id: 'carto-labels', type: 'raster', source: 'carto-labels' },
     ],
   };
 }
