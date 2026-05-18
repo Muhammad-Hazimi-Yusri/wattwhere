@@ -29,32 +29,12 @@ jobs:
 
       - run: npm test
 
-      - name: Populate GB power data if seed is empty
-        run: |
-          count=$(jq '.features | length' public/data/gb-power.geojson)
-          if [ "$count" = "0" ]; then
-            echo "seed file empty; fetching from OSM"
-            npm run data:osm
-          else
-            echo "using committed gb-power.geojson ($count features)"
-          fi
-
-      - name: Populate GB DNO regions if seed is empty
-        run: |
-          count=$(jq '.features | length' public/data/gb-regions.geojson)
-          if [ "$count" = "0" ]; then
-            echo "regions seed empty; fetching from NESO"
-            npm run data:regions
-          else
-            echo "using committed gb-regions.geojson ($count features)"
-          fi
-
       - name: Verify data artifacts
         run: |
           regions=$(jq '.features | length' public/data/gb-regions.geojson)
-          [ "$regions" -ge 14 ] || { echo "gb-regions.geojson has $regions features — populate failed"; exit 1; }
+          [ "$regions" -ge 14 ] || { echo "gb-regions.geojson has $regions features — seed is missing or stale, run npm run data:regions"; exit 1; }
           power=$(jq '.features | length' public/data/gb-power.geojson)
-          [ "$power" -gt 0 ] || { echo "gb-power.geojson has 0 features — populate failed"; exit 1; }
+          [ "$power" -gt 0 ] || { echo "gb-power.geojson has 0 features — seed is missing or stale, run npm run data:osm"; exit 1; }
           echo "data ok: regions=${regions} power=${power}"
 
       - run: npm run build

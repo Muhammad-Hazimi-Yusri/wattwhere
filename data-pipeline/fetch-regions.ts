@@ -5,8 +5,8 @@
  * public/data/gb-regions.geojson.
  *
  * Run locally:    npm run data:regions
- * Run in CI:      .github/workflows/deploy.yml — "Populate GB regions
- *                 if seed is empty" step (mirrors the OSM pattern).
+ * Run in CI:      .github/workflows/refresh-data.yml (monthly cron +
+ *                 workflow_dispatch).
  *
  * Source dataset (NESO Open Licence, ~OGL v3.0):
  *   https://www.neso.energy/data-portal/gis-boundaries-gb-dno-license-areas
