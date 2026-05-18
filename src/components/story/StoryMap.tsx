@@ -108,9 +108,16 @@ export default function StoryMap({
     };
   }, [dataUrl, regionsUrl]);
 
+  // Size the container with viewport-derived classes that mirror the
+  // parent <aside>. We can't rely on `h-full` (broken through Astro's
+  // <astro-island> display: contents — see commit e72e960 on Basemap)
+  // nor on `absolute inset-0` (MapLibre forces .maplibregl-map to
+  // position: relative once it mounts, defeating any Tailwind `absolute`
+  // class). Explicit viewport units bypass both traps.
   return (
-    <div className="relative h-full w-full">
-      <div ref={containerRef} className="absolute inset-0" />
-    </div>
+    <div
+      ref={containerRef}
+      className="h-[60vh] w-full md:h-[calc(100vh-2rem)]"
+    />
   );
 }
