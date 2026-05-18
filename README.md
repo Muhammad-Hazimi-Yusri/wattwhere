@@ -27,9 +27,10 @@ npm run preview          # serves the production build locally
 ```
 
 The basemap loads directly from CARTO's CDN — no setup. The overlay data files
-under `public/data/gb-*.geojson` are committed as empty stubs; CI populates them
-on every deploy. To populate them locally for the carbon-intensity region fills
-and power infrastructure layers, run:
+under `public/data/gb-*.geojson` are committed populated, so a fresh clone shows
+the region fills and power infrastructure overlays without running anything.
+`.github/workflows/refresh-data.yml` re-runs the pipeline monthly (and on
+`workflow_dispatch`) and commits any changes. To regenerate them on demand:
 
 ```bash
 npm run data:bootstrap   # fetches gb-power.geojson (OSM Overpass) and
