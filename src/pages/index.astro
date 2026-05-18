@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import StoryMap from '../components/story/StoryMap.tsx';
+import ScrollyController from '../components/story/ScrollyController.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -11,19 +13,100 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="A scrolly + dashboard explainer of the GB electricity grid and market." />
-    <title>wattwhere — coming soon</title>
+    <meta
+      name="description"
+      content="A scrolly explainer of the GB electricity grid and market."
+    />
+    <title>wattwhere</title>
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
   </head>
-  <body class="min-h-screen flex items-center justify-center px-6">
-    <main class="max-w-xl text-center space-y-4">
-      <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight">
-        wattwhere
-      </h1>
-      <p class="text-lg text-[color:var(--muted)]">
-        A scrolly + dashboard explainer of the GB electricity grid and market.
-      </p>
-      <p class="text-sm text-[color:var(--muted)]">coming soon</p>
+  <body>
+    <main class="mx-auto max-w-7xl px-4 md:px-8">
+      <header class="py-6 md:py-10">
+        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
+          wattwhere
+        </h1>
+        <p class="mt-2 text-sm md:text-base text-[color:var(--muted)]">
+          A scrolly explainer of the GB electricity grid.
+        </p>
+      </header>
+
+      <div class="md:grid md:grid-cols-2 md:gap-8 md:items-start">
+        <aside
+          class="sticky top-0 z-10 -mx-4 h-[60vh] md:order-2 md:mx-0 md:top-4 md:h-[calc(100vh-2rem)]"
+        >
+          <StoryMap client:only="react" />
+        </aside>
+
+        <article
+          class="py-8 md:order-1 md:py-12 space-y-24 md:space-y-32 max-w-prose"
+        >
+          <section data-step="intro" class="min-h-screen">
+            <h2 class="text-2xl font-medium">
+              Where does Britain's power come from?
+            </h2>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              Britain runs on roughly 30 GW of electricity. A national network
+              — the transmission grid — moves that power from where it's
+              generated to where it's used. The map zooms out to the whole of
+              Great Britain.
+            </p>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              As you scroll, we'll layer in <em>where</em> the power comes
+              from, <em>who</em> delivers it, and <em>how clean</em> it is
+              right now.
+            </p>
+          </section>
+
+          <section data-step="regions" class="min-h-screen">
+            <h2 class="text-2xl font-medium">14 distribution networks</h2>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              Below 132&nbsp;kV the grid splits into 14 Distribution Network
+              Operator (DNO) regions. Each shape on the map is one DNO licence
+              area — the same boundaries the National Grid uses to publish a
+              live carbon-intensity score every 30 minutes.
+            </p>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              For now we're showing the shapes; the live colour for these
+              regions lives on the dashboard.
+            </p>
+          </section>
+
+          <section data-step="plants" class="min-h-screen">
+            <h2 class="text-2xl font-medium">Generation, mostly north</h2>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              Generation is concentrated in the north and offshore: wind farms
+              on the east coast and across Scotland, the remaining nuclear at
+              Heysham, Hartlepool and Sizewell, and the big gas plants close
+              to demand centres.
+            </p>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              The orange lines on the map are the 400&nbsp;kV super-grid that
+              carries that energy south. Pink is 275&nbsp;kV, blue 132&nbsp;kV.
+            </p>
+          </section>
+
+          <section data-step="closer-look" class="min-h-[60vh]">
+            <h2 class="text-2xl font-medium">The last mile</h2>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              Zoom into London and the substations appear. Each grey dot is a
+              step-down transformer — the boundary between high-voltage
+              transmission and the low-voltage distribution that reaches your
+              home. The capital alone has hundreds.
+            </p>
+            <p class="mt-6">
+              <a
+                href={`${base}explore`}
+                class="inline-block rounded-md border border-white/15 px-4 py-2 text-sm font-medium hover:bg-white/5"
+              >
+                Open the live dashboard →
+              </a>
+            </p>
+          </section>
+        </article>
+      </div>
     </main>
+
+    <ScrollyController client:only="react" />
   </body>
 </html>
