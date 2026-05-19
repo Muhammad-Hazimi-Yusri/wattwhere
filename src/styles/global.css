@@ -47,6 +47,12 @@ body {
   [data-step][data-seen='true'] > * {
     animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+  /* Intro is SSR-baked with data-seen so the animation runs from frame
+     0. A small delay lets the rest of the page paint first, otherwise
+     slow devices see the fade-up start before the map appears behind. */
+  [data-step='intro'][data-seen='true'] > * {
+    animation-delay: 80ms;
+  }
   @media (prefers-reduced-motion: reduce) {
     [data-step] > *,
     [data-step][data-seen='true'] > * {

@@ -6,18 +6,22 @@
  * (generators / network operators / government / supplier / HMRC).
  *
  * These numbers are ROUNDED and ILLUSTRATIVE. The figcaption on
- * BillFlowSankey makes that explicit. For up-to-date precision see
+ * BillFlowCards makes that explicit. For up-to-date precision see
  * Ofgem's cap publications:
  *   https://www.ofgem.gov.uk/energy-policy-and-regulation/policy-and-regulatory-programmes/default-tariff-cap
  *
- * The two layers exist so the diagram tells a story (your bill → cost
- * bucket → where the money goes), not just a fan.
+ * The two layers exist so the data can drive either a flow diagram or
+ * a per-bucket card strip — BillFlowCards.tsx is the v0 renderer.
  */
 
 export interface SankeyNode {
   readonly id: string;
   readonly label: string;
-  /** Shorter version used by BillFlowSankey at <480 px viewport. */
+  /**
+   * Optional shorter label. Used by future narrow renderers; the
+   * current BillFlowCards uses the full `label` because each card has
+   * a column to itself.
+   */
   readonly compactLabel?: string;
 }
 

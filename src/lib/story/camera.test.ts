@@ -31,4 +31,18 @@ describe('lerpCamera', () => {
   it('clamps t above 1', () => {
     expect(lerpCamera(A, B, 2)).toEqual(B);
   });
+
+  it('applies smoothstep easing — early progress is slower than linear', () => {
+    // smoothstep(0.25) = 0.15625 → camera dwells nearer A at the start.
+    const r = lerpCamera(A, B, 0.25);
+    const linearZoom = A.zoom + (B.zoom - A.zoom) * 0.25;
+    expect(r.zoom).toBeLessThan(linearZoom);
+  });
+
+  it('applies smoothstep easing — late progress overshoots linear', () => {
+    // smoothstep(0.75) = 0.84375 → camera hurries toward B near the end.
+    const r = lerpCamera(A, B, 0.75);
+    const linearZoom = A.zoom + (B.zoom - A.zoom) * 0.75;
+    expect(r.zoom).toBeGreaterThan(linearZoom);
+  });
 });

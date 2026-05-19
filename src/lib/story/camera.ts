@@ -25,11 +25,15 @@ function lerp(a: number, b: number, t: number): number {
 }
 
 export function lerpCamera(a: CameraState, b: CameraState, t: number): CameraState {
-  const k = clamp01(t);
+  const c = clamp01(t);
   // Exact endpoints: avoids floating-point drift that would make
   // jumpTo invocations at progress=1 slightly off-target.
-  if (k === 0) return { center: [a.center[0], a.center[1]], zoom: a.zoom, pitch: a.pitch, bearing: a.bearing };
-  if (k === 1) return { center: [b.center[0], b.center[1]], zoom: b.zoom, pitch: b.pitch, bearing: b.bearing };
+  if (c === 0) return { center: [a.center[0], a.center[1]], zoom: a.zoom, pitch: a.pitch, bearing: a.bearing };
+  if (c === 1) return { center: [b.center[0], b.center[1]], zoom: b.zoom, pitch: b.pitch, bearing: b.bearing };
+  // Hermite smoothstep. Camera dwells near each step's resting state
+  // and accelerates through the middle — kills the "stuck mid-pan"
+  // feeling on long transitions like plants → closer-look.
+  const k = c * c * (3 - 2 * c);
   return {
     center: [lerp(a.center[0], b.center[0], k), lerp(a.center[1], b.center[1], k)],
     zoom: lerp(a.zoom, b.zoom, k),
