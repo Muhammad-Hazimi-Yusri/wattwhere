@@ -29,3 +29,24 @@ body {
   isolation: isolate;
   overscroll-behavior: contain;
 }
+
+/* Section-enter fade-up: each [data-step] child starts hidden and
+   animates in when ScrollyController flips data-seen='true' once
+   on first intersection. The animation is gated by
+   prefers-reduced-motion so accessibility users see static cards
+   immediately. */
+@layer components {
+  [data-step] > * {
+    opacity: 0;
+  }
+  [data-step][data-seen='true'] > * {
+    animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-step] > *,
+    [data-step][data-seen='true'] > * {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
