@@ -4,7 +4,7 @@ import StoryMap from '../components/story/StoryMap.tsx';
 import ScrollyController from '../components/story/ScrollyController.tsx';
 import StoryProgress from '../components/story/StoryProgress.tsx';
 import StepProgress from '../components/story/StepProgress.tsx';
-import BillFlowSankey from '../components/charts/BillFlowSankey.tsx';
+import BillFlowCards from '../components/charts/BillFlowCards.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -193,7 +193,7 @@ const BODY = 'text-base md:text-lg text-white/80';
                 Only part pays for the energy itself — the rest funds the
                 network, government schemes, the supplier's costs, and VAT.
               </p>
-              <BillFlowSankey client:visible />
+              <BillFlowCards client:visible />
               <p class="mt-6">
                 <a
                   href={`${base}explore`}
