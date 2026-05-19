@@ -6,12 +6,21 @@ import {
   MAPLIBRE_MAX_ZOOM,
   MAPLIBRE_MIN_ZOOM,
   OVERLAY_LAYER_IDS,
-  OVERLAY_SETS,
   STEPS,
   STEP_ORDER,
   onStoryStep,
   type Step,
 } from '../../lib/story/steps';
+import {
+  OVERLAY_OPACITY,
+  TRANSITION_LAYER_IDS,
+} from '../../lib/story/overlay-opacity';
+import { useCarbonRegions } from './useCarbonRegions';
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 function normaliseBaseUrl(): string {
   return import.meta.env.BASE_URL.endsWith('/')
@@ -32,6 +41,8 @@ export default function StoryMap({
 }: StoryMapProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
+
+  useCarbonRegions(mapRef);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -57,22 +68,34 @@ export default function StoryMap({
     // so clientHeight can read as 0 on the first measurement.
     const resizeRaf = requestAnimationFrame(() => map.resize());
 
-    function applyVisibility(step: Step): void {
+    function applyOverlayOpacities(step: Step): void {
       const active = new Set<string>();
       for (const set of step.overlays) {
         for (const id of OVERLAY_LAYER_IDS[set]) active.add(id);
       }
-      for (const set of OVERLAY_SETS) {
-        for (const id of OVERLAY_LAYER_IDS[set]) {
-          try {
-            map.setLayoutProperty(
-              id,
-              'visibility',
-              active.has(id) ? 'visible' : 'none',
-            );
-          } catch (e) {
-            console.warn('[story-map] cannot set visibility', id, e);
-          }
+      for (const [id, { prop, baseline }] of Object.entries(OVERLAY_OPACITY)) {
+        try {
+          map.setPaintProperty(id, prop, active.has(id) ? baseline : 0);
+        } catch (e) {
+          console.warn('[story-map] opacity', id, e);
+        }
+      }
+    }
+
+    function honourReducedMotion(): void {
+      // flyTo({ essential: true }) stays — camera moves are content.
+      // Opacity cross-fades are decoration; snap them under reduced motion.
+      if (!prefersReducedMotion()) return;
+      for (const id of TRANSITION_LAYER_IDS) {
+        const { prop } = OVERLAY_OPACITY[id]!;
+        try {
+          map.setPaintProperty(
+            id,
+            `${prop}-transition` as never,
+            { duration: 0, delay: 0 } as never,
+          );
+        } catch (e) {
+          console.warn('[story-map] reduced-motion transition', id, e);
         }
       }
     }
@@ -83,16 +106,22 @@ export default function StoryMap({
         zoom: step.zoom,
         pitch: step.pitch ?? 0,
         bearing: step.bearing ?? 0,
+        speed: 0.7,
+        curve: 1.6,
+        easing: (t) => t * (2 - t),
         // Deliberate: in a scrollytelling page the camera move IS the
         // content. Honouring prefers-reduced-motion here would lose the
         // spatial continuity the narrative is trying to teach.
         essential: true,
       });
-      if (map.isStyleLoaded()) applyVisibility(step);
-      else map.once('idle', () => applyVisibility(step));
+      if (map.isStyleLoaded()) applyOverlayOpacities(step);
+      else map.once('idle', () => applyOverlayOpacities(step));
     }
 
-    map.once('load', () => applyVisibility(first));
+    map.once('load', () => {
+      honourReducedMotion();
+      applyOverlayOpacities(first);
+    });
     const unsubscribe = onStoryStep(({ step }) => applyStep(step));
 
     map.on('error', (e) => {
