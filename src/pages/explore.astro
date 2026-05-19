@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Basemap from '../components/map/Basemap.tsx';
 import Legend from '../components/ui/Legend.tsx';
 import CarbonIntensityChart from '../components/charts/CarbonIntensityChart.tsx';
+import FuelMixChart from '../components/charts/FuelMixChart.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -22,6 +23,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
     <main class="fixed inset-0">
       <Basemap client:only="react" />
       <CarbonIntensityChart client:only="react" />
+      <FuelMixChart client:only="react" />
       <Legend client:load />
     </main>
   </body>
