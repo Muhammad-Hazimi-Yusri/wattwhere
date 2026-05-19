@@ -44,9 +44,28 @@ export default function ScrollyController(): null {
       dispatchStep(STEPS[initialId]);
     }
 
+    // Section-enter fade-up: set data-seen='true' once per section the
+    // first time any part of it enters the viewport. CSS in global.css
+    // gates the animation on the data attribute and respects
+    // prefers-reduced-motion.
+    const reveal = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset.seen = 'true';
+          reveal.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+    );
+    for (const el of document.querySelectorAll<HTMLElement>('[data-step]')) {
+      reveal.observe(el);
+    }
+
     return () => {
       window.removeEventListener('resize', onResize);
       scroller.destroy();
+      reveal.disconnect();
     };
   }, []);
 

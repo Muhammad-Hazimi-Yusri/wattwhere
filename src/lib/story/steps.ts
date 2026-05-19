@@ -146,3 +146,41 @@ export function onStoryStep(
   bus.addEventListener(STORY_STEP_EVENT, wrapped);
   return () => bus.removeEventListener(STORY_STEP_EVENT, wrapped);
 }
+
+// --- Continuous scroll progress bus ---------------------------------------
+//
+// `STORY_STEP_EVENT` fires once per section ENTER (driven by Scrollama).
+// `STORY_PROGRESS_EVENT` fires every animation frame while scrolling,
+// carrying a t ∈ [0, 1] of how far the viewport midpoint is through the
+// currently-active step. Used by StoryMap to LERP the camera continuously
+// rather than relying on a discrete flyTo at each step boundary.
+
+export const STORY_PROGRESS_EVENT = 'wattwhere:story-progress' as const;
+
+export interface StoryProgressEventDetail {
+  readonly stepId: string;
+  /** 0..1 within the currently-active step. */
+  readonly progress: number;
+  /** id of the next step in STEP_ORDER, or null if on the last step. */
+  readonly nextStepId: string | null;
+}
+
+export type StoryProgressEvent = CustomEvent<StoryProgressEventDetail>;
+
+export function dispatchProgress(detail: StoryProgressEventDetail): void {
+  const evt: StoryProgressEvent = new CustomEvent(STORY_PROGRESS_EVENT, {
+    detail,
+  });
+  getBus().dispatchEvent(evt);
+}
+
+export function onStoryProgress(
+  handler: (detail: StoryProgressEventDetail) => void,
+): () => void {
+  const bus = getBus();
+  const wrapped = (e: Event): void => {
+    handler((e as StoryProgressEvent).detail);
+  };
+  bus.addEventListener(STORY_PROGRESS_EVENT, wrapped);
+  return () => bus.removeEventListener(STORY_PROGRESS_EVENT, wrapped);
+}
