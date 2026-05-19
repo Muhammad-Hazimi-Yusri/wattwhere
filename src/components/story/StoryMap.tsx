@@ -8,6 +8,7 @@ import {
   OVERLAY_LAYER_IDS,
   STEPS,
   STEP_ORDER,
+  onStoryProgress,
   onStoryStep,
   type Step,
 } from '../../lib/story/steps';
@@ -15,8 +16,18 @@ import {
   OVERLAY_OPACITY,
   TRANSITION_LAYER_IDS,
 } from '../../lib/story/overlay-opacity';
+import { lerpCamera, type CameraState } from '../../lib/story/camera';
 import { useCarbonRegions } from './useCarbonRegions';
 import { useDeckFlows } from './useDeckFlows';
+
+function stepToCamera(step: Step): CameraState {
+  return {
+    center: step.center,
+    zoom: step.zoom,
+    pitch: step.pitch ?? 0,
+    bearing: step.bearing ?? 0,
+  };
+}
 
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined' || !window.matchMedia) return false;
@@ -66,12 +77,18 @@ export default function StoryMap({
       maxZoom: MAPLIBRE_MAX_ZOOM,
       attributionControl: { compact: true },
       hash: false,
-      // The story map is scroll-driven; pan/zoom would fight the next flyTo.
+      // The story map is scroll-driven; pan/zoom would fight the LERP.
       interactive: false,
     });
     // Same first-paint fix as Basemap: <astro-island> uses display: contents,
     // so clientHeight can read as 0 on the first measurement.
     const resizeRaf = requestAnimationFrame(() => map.resize());
+
+    // Container can switch between fixed (mobile) and sticky-in-grid
+    // (desktop) when crossing the md breakpoint. Watch the container
+    // so MapLibre re-measures correctly.
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(containerRef.current);
 
     function applyOverlayOpacities(step: Step): void {
       const active = new Set<string>();
@@ -106,29 +123,36 @@ export default function StoryMap({
     }
 
     function applyStep(step: Step): void {
-      map.flyTo({
-        center: step.center as [number, number],
-        zoom: step.zoom,
-        pitch: step.pitch ?? 0,
-        bearing: step.bearing ?? 0,
-        speed: 0.7,
-        curve: 1.6,
-        easing: (t) => t * (2 - t),
-        // Deliberate: in a scrollytelling page the camera move IS the
-        // content. Honouring prefers-reduced-motion here would lose the
-        // spatial continuity the narrative is trying to teach.
-        essential: true,
-      });
+      // Camera is driven continuously by onStoryProgress (LERP via
+      // jumpTo); the step-enter handler only updates overlay opacity
+      // and the active flow set. No flyTo here — it would fight the
+      // very next progress-driven jumpTo.
       if (map.isStyleLoaded()) applyOverlayOpacities(step);
       else map.once('idle', () => applyOverlayOpacities(step));
       setActiveFlows(step.flows ?? []);
+    }
+
+    function applyProgress(stepId: string, progress: number, nextStepId: string | null): void {
+      const curr = STEPS[stepId];
+      if (!curr) return;
+      const next = nextStepId ? STEPS[nextStepId] : null;
+      const target = next ? lerpCamera(stepToCamera(curr), stepToCamera(next), progress) : stepToCamera(curr);
+      map.jumpTo({
+        center: target.center as [number, number],
+        zoom: target.zoom,
+        pitch: target.pitch,
+        bearing: target.bearing,
+      });
     }
 
     map.once('load', () => {
       honourReducedMotion();
       applyOverlayOpacities(first);
     });
-    const unsubscribe = onStoryStep(({ step }) => applyStep(step));
+    const unsubscribeStep = onStoryStep(({ step }) => applyStep(step));
+    const unsubscribeProgress = onStoryProgress(({ stepId, progress, nextStepId }) =>
+      applyProgress(stepId, progress, nextStepId),
+    );
 
     map.on('error', (e) => {
       console.warn('[story-map]', e.error?.message ?? 'map error');
@@ -136,7 +160,9 @@ export default function StoryMap({
     mapRef.current = map;
 
     return () => {
-      unsubscribe();
+      unsubscribeStep();
+      unsubscribeProgress();
+      ro.disconnect();
       cancelAnimationFrame(resizeRaf);
       map.remove();
       mapRef.current = null;
