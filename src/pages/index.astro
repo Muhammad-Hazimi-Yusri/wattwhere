@@ -3,6 +3,7 @@ import '../styles/global.css';
 import StoryMap from '../components/story/StoryMap.tsx';
 import ScrollyController from '../components/story/ScrollyController.tsx';
 import StoryProgress from '../components/story/StoryProgress.tsx';
+import StepProgress from '../components/story/StepProgress.tsx';
 import BillFlowSankey from '../components/charts/BillFlowSankey.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
@@ -152,5 +153,6 @@ const base = import.meta.env.BASE_URL.endsWith('/')
 
     <ScrollyController client:only="react" />
     <StoryProgress client:only="react" />
+    <StepProgress client:only="react" />
   </body>
 </html>
