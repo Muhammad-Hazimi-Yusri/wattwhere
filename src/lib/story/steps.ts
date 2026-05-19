@@ -73,6 +73,16 @@ export const STEPS: Readonly<Record<string, Step>> = {
     overlays: ['power-infra'],
     flows: ['scot-wind-to-london', 'dogger-to-london'],
   },
+  supergrid: {
+    id: 'supergrid',
+    // Yorkshire / Midlands corridor — the densest 400 kV spine.
+    // Zoom 6.5 is monotonic between plants (6) and closer-look (9)
+    // so the smoothstep LERP feels like a steady camera push south.
+    center: [-1.5, 53.0],
+    zoom: 6.5,
+    overlays: ['power-infra'],
+    flows: ['scot-wind-to-london', 'dogger-to-london'],
+  },
   'closer-look': {
     id: 'closer-look',
     center: [-0.1, 51.5],
@@ -83,8 +93,8 @@ export const STEPS: Readonly<Record<string, Step>> = {
   bill: {
     id: 'bill',
     // Bookends the story: same camera as `intro`, no overlays or flows
-    // so the sticky map doesn't compete with the sankey in the article
-    // column.
+    // so the sticky map doesn't compete with the bill cards in the
+    // article column.
     center: [-2.5, 54.5],
     zoom: 5.5,
     overlays: [],
@@ -96,6 +106,7 @@ export const STEP_ORDER: ReadonlyArray<string> = [
   'intro',
   'regions',
   'plants',
+  'supergrid',
   'closer-look',
   'bill',
 ];
