@@ -10,10 +10,14 @@ import {
   OVERLAY_SETS,
   STEPS,
   STEP_ORDER,
+  STORY_PROGRESS_EVENT,
   STORY_STEP_EVENT,
+  dispatchProgress,
   dispatchStep,
+  onStoryProgress,
   onStoryStep,
   type Step,
+  type StoryProgressEventDetail,
 } from './steps';
 
 describe('STEPS config', () => {
@@ -95,5 +99,31 @@ describe('dispatchStep / onStoryStep', () => {
 
   it('uses the documented event name', () => {
     expect(STORY_STEP_EVENT).toBe('wattwhere:story-step');
+  });
+});
+
+describe('dispatchProgress / onStoryProgress', () => {
+  it('round-trips a progress event through the bus', () => {
+    const received: StoryProgressEventDetail[] = [];
+    const unsubscribe = onStoryProgress((d) => received.push(d));
+    dispatchProgress({ stepId: 'intro', progress: 0.25, nextStepId: 'regions' });
+    dispatchProgress({ stepId: 'plants', progress: 0.6, nextStepId: 'closer-look' });
+    unsubscribe();
+    dispatchProgress({ stepId: 'bill', progress: 0.5, nextStepId: null });
+    expect(received).toHaveLength(2);
+    expect(received[0]).toMatchObject({
+      stepId: 'intro',
+      progress: 0.25,
+      nextStepId: 'regions',
+    });
+    expect(received[1]).toMatchObject({
+      stepId: 'plants',
+      progress: 0.6,
+      nextStepId: 'closer-look',
+    });
+  });
+
+  it('uses the documented event name', () => {
+    expect(STORY_PROGRESS_EVENT).toBe('wattwhere:story-progress');
   });
 });
