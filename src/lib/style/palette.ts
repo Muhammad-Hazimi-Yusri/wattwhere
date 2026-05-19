@@ -25,10 +25,32 @@ export const PLANT_SOURCE_COLOURS: Record<string, string> = {
   oil: '#D55E00',
   biomass: '#009E73',
   battery: '#999999',
+  interconnector: '#9b9b9b',
   other: '#666666',
 };
 
 export const SUBSTATION_COLOUR = '#888888';
+
+/**
+ * Maps each BMRS-collapsed FuelType to a colour from PLANT_SOURCE_COLOURS.
+ * Same Okabe-Ito categorical palette; offshore and pumped-storage delegate
+ * to their nearest equivalents to keep the stacked-area chart readable.
+ */
+export const FUEL_COLOURS: Record<string, string> = {
+  CCGT: PLANT_SOURCE_COLOURS.gas!,
+  OCGT: PLANT_SOURCE_COLOURS.gas!,
+  COAL: PLANT_SOURCE_COLOURS.coal!,
+  OIL: PLANT_SOURCE_COLOURS.oil!,
+  NUCLEAR: PLANT_SOURCE_COLOURS.nuclear!,
+  BIOMASS: PLANT_SOURCE_COLOURS.biomass!,
+  WIND: PLANT_SOURCE_COLOURS.wind!,
+  OFFSHORE_WIND: PLANT_SOURCE_COLOURS.wind!,
+  SOLAR: PLANT_SOURCE_COLOURS.solar!,
+  HYDRO: PLANT_SOURCE_COLOURS.hydro!,
+  PUMP_STORAGE: PLANT_SOURCE_COLOURS.hydro!,
+  INTERCONNECTOR: PLANT_SOURCE_COLOURS.interconnector!,
+  OTHER: PLANT_SOURCE_COLOURS.other!,
+};
 
 export const CARBON_INTENSITY_INDEXES = [
   'very low',

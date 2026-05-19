@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildStyle } from '../../components/map/style';
+import { OVERLAY_OPACITY } from './overlay-opacity';
 import {
   GB_LAT_BOUNDS,
   GB_LON_BOUNDS,
@@ -68,6 +69,14 @@ describe('OVERLAY_LAYER_IDS', () => {
     }
     expect(allOverlayIds.has('carto-base')).toBe(false);
     expect(allOverlayIds.has('carto-labels')).toBe(false);
+  });
+
+  it('every overlay layer has an OVERLAY_OPACITY baseline', () => {
+    for (const set of OVERLAY_SETS) {
+      for (const id of OVERLAY_LAYER_IDS[set]) {
+        expect(OVERLAY_OPACITY[id]).toBeDefined();
+      }
+    }
   });
 });
 

@@ -47,23 +47,10 @@ interface Fetchable {
   (input: string, init?: RequestInit): Promise<Response>;
 }
 
-/**
- * Round a Date down to the previous half-hour boundary (00 or 30 minutes,
- * 0 ms). Matches the API's settlement-period grid.
- */
-export function floorHalfHourUTC(d: Date): Date {
-  const ms = d.getTime();
-  return new Date(ms - (ms % (30 * 60 * 1000)));
-}
-
-/** API expects `YYYY-MM-DDThh:mmZ` (no seconds). */
-export function formatApiInstant(d: Date): string {
-  const pad = (n: number): string => String(n).padStart(2, '0');
-  return (
-    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` +
-    `T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`
-  );
-}
+// Time helpers lifted to src/lib/time.ts (shared with bmrs.ts).
+// Re-exported here so existing imports keep working unchanged.
+export { floorHalfHourUTC, formatApiInstant } from '../time';
+import { floorHalfHourUTC, formatApiInstant } from '../time';
 
 export function national24hUrl(now: Date = new Date()): string {
   const end = floorHalfHourUTC(now);

@@ -7,8 +7,6 @@ import {
   REGIONAL_ENDPOINT,
   fetchNational24h,
   fetchRegional,
-  floorHalfHourUTC,
-  formatApiInstant,
   national24hUrl,
   parseNationalSeries,
   parseRegionalResponse,
@@ -86,21 +84,7 @@ describe('fetchRegional', () => {
   });
 });
 
-describe('floorHalfHourUTC + formatApiInstant + national24hUrl', () => {
-  it('floors any instant to the previous half-hour boundary in UTC', () => {
-    expect(floorHalfHourUTC(new Date('2026-05-17T12:17:30.500Z')).toISOString())
-      .toBe('2026-05-17T12:00:00.000Z');
-    expect(floorHalfHourUTC(new Date('2026-05-17T12:45:00.000Z')).toISOString())
-      .toBe('2026-05-17T12:30:00.000Z');
-    expect(floorHalfHourUTC(new Date('2026-05-17T12:30:00.000Z')).toISOString())
-      .toBe('2026-05-17T12:30:00.000Z');
-  });
-
-  it('formats an instant as YYYY-MM-DDThh:mmZ (no seconds)', () => {
-    expect(formatApiInstant(new Date('2026-05-17T09:05:00.000Z')))
-      .toBe('2026-05-17T09:05Z');
-  });
-
+describe('national24hUrl', () => {
   it('builds a 24h-window URL anchored to the floored "now"', () => {
     const url = national24hUrl(new Date('2026-05-17T12:45:00.000Z'));
     expect(url).toBe(`${NATIONAL_ENDPOINT}/2026-05-16T12:30Z/2026-05-17T12:30Z`);

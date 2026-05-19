@@ -48,6 +48,7 @@ function powerLayers(): LayerSpecification[] {
         ['match', ['get', 'voltage'], 400, 2.4, 275, 1.8, 132, 1.2, 0.8],
       ],
       'line-opacity': 0.85,
+      'line-opacity-transition': { duration: 600, delay: 0 },
     },
   };
 
@@ -63,6 +64,7 @@ function powerLayers(): LayerSpecification[] {
       'circle-stroke-color': '#0a0e14',
       'circle-stroke-width': 0.5,
       'circle-opacity': 0.9,
+      'circle-opacity-transition': { duration: 600, delay: 0 },
     },
   };
 
@@ -94,6 +96,7 @@ function powerLayers(): LayerSpecification[] {
     'circle-stroke-color': '#ffffff',
     'circle-stroke-width': 1,
     'circle-opacity': 0.9,
+    'circle-opacity-transition': { duration: 600, delay: 0 },
   };
 
   const plants: LayerSpecification = {
@@ -115,6 +118,7 @@ function carbonRegionLayers(): LayerSpecification[] {
     paint: {
       'fill-color': CARBON_INTENSITY_UNAVAILABLE_COLOUR,
       'fill-opacity': 0.45,
+      'fill-opacity-transition': { duration: 600, delay: 0 },
     },
   };
   const outline: LayerSpecification = {
@@ -125,6 +129,7 @@ function carbonRegionLayers(): LayerSpecification[] {
       'line-color': '#000',
       'line-opacity': 0.45,
       'line-width': 0.6,
+      'line-opacity-transition': { duration: 600, delay: 0 },
     },
   };
   return [fill, outline];
