@@ -175,10 +175,13 @@ export default function StoryMap({
   // nor on `absolute inset-0` (MapLibre forces .maplibregl-map to
   // position: relative once it mounts, defeating any Tailwind `absolute`
   // class). Explicit viewport units bypass both traps.
+  //
+  // 100dvh on mobile honours iOS Safari address-bar collapse so the
+  // full-bleed background map never has a strip of empty page below it.
   return (
     <div
       ref={containerRef}
-      className="h-[60vh] w-full md:h-[calc(100vh-2rem)]"
+      className="h-[100dvh] w-full md:h-[calc(100vh-2rem)]"
     />
   );
 }

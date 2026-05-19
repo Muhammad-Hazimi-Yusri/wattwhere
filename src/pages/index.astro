@@ -24,7 +24,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   </head>
   <body>
     <main class="mx-auto max-w-7xl px-4 md:px-8">
-      <header class="py-6 md:py-10">
+      <header class="py-6 md:py-10 relative">
         <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
           wattwhere
         </h1>
@@ -34,87 +34,117 @@ const base = import.meta.env.BASE_URL.endsWith('/')
       </header>
 
       <div class="md:grid md:grid-cols-2 md:gap-8 md:items-start">
+        <!--
+          Map sits behind everything on <md (fixed inset-0 -z-10) and
+          inside the grid as a sticky right column on md+. Same component
+          instance either way; ResizeObserver in StoryMap re-measures
+          across the breakpoint.
+        -->
         <aside
-          class="sticky top-0 z-10 -mx-4 h-[60vh] md:order-2 md:mx-0 md:top-4 md:h-[calc(100vh-2rem)]"
+          class="fixed inset-0 -z-10 h-[100dvh] w-screen md:relative md:inset-auto md:sticky md:top-4 md:order-2 md:z-10 md:h-[calc(100vh-2rem)] md:w-auto"
         >
           <StoryMap client:only="react" />
         </aside>
 
         <article
-          class="py-8 md:order-1 md:py-12 space-y-24 md:space-y-32 max-w-prose"
+          class="md:order-1 md:py-12 md:space-y-32 max-w-prose"
         >
-          <section data-step="intro" class="min-h-screen">
-            <h2 class="text-2xl font-medium">
-              Where does Britain's power come from?
-            </h2>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              Britain runs on roughly 30 GW of electricity. A national network
-              — the transmission grid — moves that power from where it's
-              generated to where it's used. The map zooms out to the whole of
-              Great Britain.
-            </p>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              As you scroll, we'll layer in <em>where</em> the power comes
-              from, <em>who</em> delivers it, and <em>how clean</em> it is
-              right now.
-            </p>
+          <section
+            data-step="intro"
+            class="min-h-[100dvh] flex flex-col justify-end pb-8 md:block md:min-h-screen md:pb-0"
+          >
+            <div class="rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+              <h2 class="text-2xl font-medium">
+                Where does Britain's power come from?
+              </h2>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                Britain runs on roughly 30 GW of electricity. A national network
+                — the transmission grid — moves that power from where it's
+                generated to where it's used. The map zooms out to the whole of
+                Great Britain.
+              </p>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                As you scroll, we'll layer in <em>where</em> the power comes
+                from, <em>who</em> delivers it, and <em>how clean</em> it is
+                right now.
+              </p>
+            </div>
           </section>
 
-          <section data-step="regions" class="min-h-screen">
-            <h2 class="text-2xl font-medium">14 distribution networks</h2>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              Below 132&nbsp;kV the grid splits into 14 Distribution Network
-              Operator (DNO) regions. Each shape on the map is one DNO licence
-              area — the same boundaries the National Grid uses to publish a
-              live carbon-intensity score every 30 minutes.
-            </p>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              For now we're showing the shapes; the live colour for these
-              regions lives on the dashboard.
-            </p>
+          <section
+            data-step="regions"
+            class="min-h-[100dvh] flex flex-col justify-end pb-8 md:block md:min-h-screen md:pb-0"
+          >
+            <div class="rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+              <h2 class="text-2xl font-medium">14 distribution networks</h2>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                Below 132&nbsp;kV the grid splits into 14 Distribution Network
+                Operator (DNO) regions. Each shape on the map is one DNO licence
+                area — the same boundaries the National Grid uses to publish a
+                live carbon-intensity score every 30 minutes.
+              </p>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                Greener regions are below the GB average; redder are above.
+              </p>
+            </div>
           </section>
 
-          <section data-step="plants" class="min-h-screen">
-            <h2 class="text-2xl font-medium">Generation, mostly north</h2>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              Generation is concentrated in the north and offshore: wind farms
-              on the east coast and across Scotland, the remaining nuclear at
-              Heysham, Hartlepool and Sizewell, and the big gas plants close
-              to demand centres.
-            </p>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              The orange lines on the map are the 400&nbsp;kV super-grid that
-              carries that energy south. Pink is 275&nbsp;kV, blue 132&nbsp;kV.
-            </p>
+          <section
+            data-step="plants"
+            class="min-h-[100dvh] flex flex-col justify-end pb-8 md:block md:min-h-screen md:pb-0"
+          >
+            <div class="rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+              <h2 class="text-2xl font-medium">Generation, mostly north</h2>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                Generation is concentrated in the north and offshore: wind farms
+                on the east coast and across Scotland, the remaining nuclear at
+                Heysham, Hartlepool and Sizewell, and the big gas plants close
+                to demand centres.
+              </p>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                The orange lines on the map are the 400&nbsp;kV super-grid that
+                carries that energy south. Pink is 275&nbsp;kV, blue 132&nbsp;kV.
+              </p>
+            </div>
           </section>
 
-          <section data-step="closer-look" class="min-h-screen">
-            <h2 class="text-2xl font-medium">The last mile</h2>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              Zoom into London and the substations appear. Each grey dot is a
-              step-down transformer — the boundary between high-voltage
-              transmission and the low-voltage distribution that reaches your
-              home. The capital alone has hundreds.
-            </p>
+          <section
+            data-step="closer-look"
+            class="min-h-[100dvh] flex flex-col justify-end pb-8 md:block md:min-h-screen md:pb-0"
+          >
+            <div class="rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+              <h2 class="text-2xl font-medium">The last mile</h2>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                Zoom into London and the substations appear. Each grey dot is a
+                step-down transformer — the boundary between high-voltage
+                transmission and the low-voltage distribution that reaches your
+                home. The capital alone has hundreds.
+              </p>
+            </div>
           </section>
 
-          <section data-step="bill" class="min-h-[60vh]">
-            <h2 class="text-2xl font-medium">Where the money goes</h2>
-            <p class="mt-3 text-[color:var(--fg)]/85">
-              When you pay a £1 of your electricity bill, only part of it
-              pays for the energy itself. The rest covers the network that
-              gets it to you, government policy schemes, the supplier's
-              own operating costs and margin, and VAT.
-            </p>
-            <BillFlowSankey client:visible />
-            <p class="mt-6">
-              <a
-                href={`${base}explore`}
-                class="inline-block rounded-md border border-white/15 px-4 py-2 text-sm font-medium hover:bg-white/5"
-              >
-                Open the live dashboard →
-              </a>
-            </p>
+          <section
+            data-step="bill"
+            class="min-h-[80dvh] flex flex-col justify-end pb-8 md:block md:min-h-[60vh] md:pb-0"
+          >
+            <div class="rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+              <h2 class="text-2xl font-medium">Where the money goes</h2>
+              <p class="mt-3 text-[color:var(--fg)]/85">
+                When you pay a £1 of your electricity bill, only part of it
+                pays for the energy itself. The rest covers the network that
+                gets it to you, government policy schemes, the supplier's
+                own operating costs and margin, and VAT.
+              </p>
+              <BillFlowSankey client:visible />
+              <p class="mt-6">
+                <a
+                  href={`${base}explore`}
+                  class="inline-block rounded-md border border-white/15 px-4 py-2 text-sm font-medium hover:bg-white/5"
+                >
+                  Open the live dashboard →
+                </a>
+              </p>
+            </div>
           </section>
         </article>
       </div>

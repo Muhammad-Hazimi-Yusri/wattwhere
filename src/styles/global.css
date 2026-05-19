@@ -15,9 +15,17 @@ body {
   background: var(--bg);
   color: var(--fg);
   min-height: 100%;
+  /* iOS Safari 15.4+ honours dvh; fall back to old fill-available
+     for earlier versions so 100dvh sections don't collapse. */
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
 }
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Establish a stacking context so a -z-10 background map can't
+     fall behind the document. Suppresses the iOS rubber-band flash. */
+  isolation: isolate;
+  overscroll-behavior: contain;
 }
