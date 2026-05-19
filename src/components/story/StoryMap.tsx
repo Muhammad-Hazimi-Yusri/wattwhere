@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { buildStyle } from '../map/style';
@@ -16,6 +16,7 @@ import {
   TRANSITION_LAYER_IDS,
 } from '../../lib/story/overlay-opacity';
 import { useCarbonRegions } from './useCarbonRegions';
+import { useDeckFlows } from './useDeckFlows';
 
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined' || !window.matchMedia) return false;
@@ -41,8 +42,12 @@ export default function StoryMap({
 }: StoryMapProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
+  const [activeFlows, setActiveFlows] = useState<ReadonlyArray<string>>(
+    STEPS[STEP_ORDER[0]!]!.flows ?? [],
+  );
 
   useCarbonRegions(mapRef);
+  useDeckFlows(mapRef, activeFlows);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -116,6 +121,7 @@ export default function StoryMap({
       });
       if (map.isStyleLoaded()) applyOverlayOpacities(step);
       else map.once('idle', () => applyOverlayOpacities(step));
+      setActiveFlows(step.flows ?? []);
     }
 
     map.once('load', () => {

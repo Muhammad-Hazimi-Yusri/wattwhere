@@ -36,6 +36,11 @@ export interface Step {
   readonly center: readonly [number, number];
   readonly zoom: number;
   readonly overlays: ReadonlyArray<OverlaySet>;
+  /**
+   * Flow IDs (keys of FLOWS in `./flows.ts`) to animate on this step.
+   * Optional; omitted means no flows on this step.
+   */
+  readonly flows?: ReadonlyArray<string>;
   readonly pitch?: number;
   readonly bearing?: number;
 }
@@ -52,24 +57,28 @@ export const STEPS: Readonly<Record<string, Step>> = {
     center: [-2.5, 54.5],
     zoom: 5.5,
     overlays: [],
+    flows: [],
   },
   regions: {
     id: 'regions',
     center: [-2.5, 54.5],
     zoom: 5.5,
     overlays: ['carbon-regions'],
+    flows: [],
   },
   plants: {
     id: 'plants',
     center: [-2.5, 55.5],
     zoom: 6,
     overlays: ['power-infra'],
+    flows: ['scot-wind-to-london', 'dogger-to-london'],
   },
   'closer-look': {
     id: 'closer-look',
     center: [-0.1, 51.5],
     zoom: 9,
     overlays: ['power-infra'],
+    flows: ['heysham-to-manchester', 'wylfa-to-midlands', 'ifa-to-south-coast'],
   },
 };
 
