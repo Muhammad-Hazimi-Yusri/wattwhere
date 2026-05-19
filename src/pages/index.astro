@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import StoryMap from '../components/story/StoryMap.tsx';
 import ScrollyController from '../components/story/ScrollyController.tsx';
+import BillFlowSankey from '../components/charts/BillFlowSankey.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -86,7 +87,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
             </p>
           </section>
 
-          <section data-step="closer-look" class="min-h-[60vh]">
+          <section data-step="closer-look" class="min-h-screen">
             <h2 class="text-2xl font-medium">The last mile</h2>
             <p class="mt-3 text-[color:var(--fg)]/85">
               Zoom into London and the substations appear. Each grey dot is a
@@ -94,6 +95,17 @@ const base = import.meta.env.BASE_URL.endsWith('/')
               transmission and the low-voltage distribution that reaches your
               home. The capital alone has hundreds.
             </p>
+          </section>
+
+          <section data-step="bill" class="min-h-[60vh]">
+            <h2 class="text-2xl font-medium">Where the money goes</h2>
+            <p class="mt-3 text-[color:var(--fg)]/85">
+              When you pay a £1 of your electricity bill, only part of it
+              pays for the energy itself. The rest covers the network that
+              gets it to you, government policy schemes, the supplier's
+              own operating costs and margin, and VAT.
+            </p>
+            <BillFlowSankey client:visible />
             <p class="mt-6">
               <a
                 href={`${base}explore`}

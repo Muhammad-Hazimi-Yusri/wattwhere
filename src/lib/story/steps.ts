@@ -80,6 +80,16 @@ export const STEPS: Readonly<Record<string, Step>> = {
     overlays: ['power-infra'],
     flows: ['heysham-to-manchester', 'wylfa-to-midlands', 'ifa-to-south-coast'],
   },
+  bill: {
+    id: 'bill',
+    // Bookends the story: same camera as `intro`, no overlays or flows
+    // so the sticky map doesn't compete with the sankey in the article
+    // column.
+    center: [-2.5, 54.5],
+    zoom: 5.5,
+    overlays: [],
+    flows: [],
+  },
 };
 
 export const STEP_ORDER: ReadonlyArray<string> = [
@@ -87,6 +97,7 @@ export const STEP_ORDER: ReadonlyArray<string> = [
   'regions',
   'plants',
   'closer-look',
+  'bill',
 ];
 
 // --- Event bus -------------------------------------------------------------
