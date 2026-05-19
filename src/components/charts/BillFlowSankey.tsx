@@ -10,6 +10,7 @@ import { BILL } from '../../lib/billing/bill-flow';
 interface InNode {
   id: string;
   label: string;
+  compactLabel?: string;
 }
 interface InLink {
   source: string;
@@ -19,7 +20,7 @@ interface InLink {
 
 const NODE_WIDTH = 14;
 const NODE_PADDING = 14;
-const MARGIN = { top: 20, right: 130, bottom: 24, left: 14 };
+const COMPACT_BREAKPOINT = 480;
 const COLOURS: Record<string, string> = {
   you: '#58a6ff',
   wholesale: '#E69F00',
@@ -55,10 +56,24 @@ export default function BillFlowSankey(): JSX.Element {
     return () => ro.disconnect();
   }, []);
 
+  const compact = width < COMPACT_BREAKPOINT;
+  const fontSize = compact ? 10 : 11;
+  const margin = {
+    top: 20,
+    right: compact ? 86 : 130,
+    bottom: 24,
+    left: 14,
+  };
+
   const layout = useMemo(() => {
     const height = Math.max(320, Math.min(440, BILL.nodes.length * 32));
-    // d3-sankey mutates inputs. Clone every render.
-    const nodes: InNode[] = BILL.nodes.map((n) => ({ id: n.id, label: n.label }));
+    // d3-sankey mutates inputs. Clone every render and propagate compactLabel
+    // so the renderer can substitute on narrow viewports.
+    const nodes: InNode[] = BILL.nodes.map((n) => ({
+      id: n.id,
+      label: n.label,
+      ...(n.compactLabel !== undefined ? { compactLabel: n.compactLabel } : {}),
+    }));
     const links: InLink[] = BILL.links.map((l) => ({
       source: l.source,
       target: l.target,
@@ -69,15 +84,15 @@ export default function BillFlowSankey(): JSX.Element {
       .nodeWidth(NODE_WIDTH)
       .nodePadding(NODE_PADDING)
       .extent([
-        [MARGIN.left, MARGIN.top],
-        [width - MARGIN.right, height - MARGIN.bottom],
+        [margin.left, margin.top],
+        [width - margin.right, height - margin.bottom],
       ]);
     const graph: SankeyGraph<InNode, InLink> = generator({
       nodes: nodes as never,
       links: links as never,
     });
     return { graph, height };
-  }, [width]);
+  }, [width, margin.left, margin.right, margin.top, margin.bottom]);
 
   const linkPath = sankeyLinkHorizontal<InNode, InLink>();
 
@@ -142,10 +157,10 @@ export default function BillFlowSankey(): JSX.Element {
                   y={(y0 + y1) / 2}
                   dy="0.35em"
                   textAnchor={labelOnRight ? 'start' : 'end'}
-                  fontSize={11}
+                  fontSize={fontSize}
                   fill="rgba(255,255,255,0.85)"
                 >
-                  {n.label}
+                  {compact ? (n.compactLabel ?? n.label) : n.label}
                   <tspan dx="0.3em" fill="rgba(255,255,255,0.55)">
                     {`${n.value ?? 0}p`}
                   </tspan>

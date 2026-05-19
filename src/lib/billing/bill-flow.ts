@@ -17,6 +17,8 @@
 export interface SankeyNode {
   readonly id: string;
   readonly label: string;
+  /** Shorter version used by BillFlowSankey at <480 px viewport. */
+  readonly compactLabel?: string;
 }
 
 export interface SankeyLink {
@@ -34,19 +36,19 @@ export interface BillBreakdown {
 
 export const BILL: BillBreakdown = {
   nodes: [
-    { id: 'you',        label: 'Your bill (£1)' },
+    { id: 'you',        label: 'Your bill (£1)',          compactLabel: 'Your £1' },
     // Layer 1 — cost components.
-    { id: 'wholesale',  label: 'Wholesale energy' },
-    { id: 'network',    label: 'Network costs' },
-    { id: 'policy',     label: 'Policy costs' },
-    { id: 'operating',  label: 'Supplier operating' },
-    { id: 'margin',     label: 'Supplier margin' },
-    { id: 'other',      label: 'Other (capacity etc.)' },
-    { id: 'vat',        label: 'VAT (5%)' },
+    { id: 'wholesale',  label: 'Wholesale energy',         compactLabel: 'Wholesale' },
+    { id: 'network',    label: 'Network costs',            compactLabel: 'Network' },
+    { id: 'policy',     label: 'Policy costs',             compactLabel: 'Policy' },
+    { id: 'operating',  label: 'Supplier operating',       compactLabel: 'Operating' },
+    { id: 'margin',     label: 'Supplier margin',          compactLabel: 'Margin' },
+    { id: 'other',      label: 'Other (capacity etc.)',    compactLabel: 'Other' },
+    { id: 'vat',        label: 'VAT (5%)',                 compactLabel: 'VAT' },
     // Layer 2 — where the money goes.
     { id: 'generators', label: 'Generators' },
-    { id: 'tnos',       label: 'Transmission + DNOs' },
-    { id: 'gov-policy', label: 'Govt. levies' },
+    { id: 'tnos',       label: 'Transmission + DNOs',      compactLabel: 'Networks' },
+    { id: 'gov-policy', label: 'Govt. levies',             compactLabel: 'Govt.' },
     { id: 'supplier',   label: 'Supplier' },
     { id: 'hmrc',       label: 'HMRC' },
   ],
