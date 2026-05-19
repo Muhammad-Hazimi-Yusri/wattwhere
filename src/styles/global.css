@@ -32,9 +32,14 @@ body {
 
 /* Section-enter fade-up: each [data-step] child starts hidden and
    animates in when ScrollyController flips data-seen='true' once
-   on first intersection. The animation is gated by
-   prefers-reduced-motion so accessibility users see static cards
-   immediately. */
+   on first intersection. The @keyframes lives here (not via Tailwind's
+   theme.extend) because the trigger is a raw attribute selector rather
+   than a utility class — Tailwind only emits the keyframes when an
+   `animate-fade-up` utility class is used in a template. */
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
 @layer components {
   [data-step] > * {
     opacity: 0;
