@@ -2,7 +2,7 @@ import { useEffect, useRef, type RefObject } from 'react';
 import type { Map as MlMap, IControl as MlIControl } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TripsLayer } from '@deck.gl/geo-layers';
-import { FLOWS, flowGreatCircle, type Flow } from '../../lib/story/flows';
+import { FLOWS, flowPath, type Flow } from '../../lib/story/flows';
 
 const TRIP_PERIOD_MS = 6_000;
 const TRAIL_LENGTH = 0.25;
@@ -26,7 +26,7 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 function expandFlow(flow: Flow): TripDatum {
-  const samples = flowGreatCircle(flow);
+  const samples = flowPath(flow);
   return {
     id: flow.id,
     path: samples.map(([lon, lat]) => [lon, lat] as const),

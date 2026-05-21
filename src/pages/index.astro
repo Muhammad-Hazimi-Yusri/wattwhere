@@ -43,13 +43,21 @@ const BODY = 'text-base md:text-lg text-white/80';
   </head>
   <body>
     <main class="mx-auto max-w-7xl px-4 md:px-8">
-      <header class="py-6 md:py-10 relative">
-        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
-          wattwhere
-        </h1>
-        <p class="mt-2 text-sm md:text-base text-[color:var(--muted)]">
-          A scrolly explainer of the GB electricity grid.
-        </p>
+      <header class="pt-6 pb-2 md:py-10">
+        <!--
+          On mobile the title overlays the full-bleed map, so it needs
+          a backing to stay legible. inline-block keeps the scrim tight
+          to the text; on md+ the header sits above the grid over the
+          page background, so the chrome drops away.
+        -->
+        <div class="inline-block rounded-lg bg-black/65 px-4 py-3 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
+          <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
+            wattwhere
+          </h1>
+          <p class="mt-1 text-sm md:text-base text-[color:var(--muted)]">
+            A scrolly explainer of the GB electricity grid.
+          </p>
+        </div>
       </header>
 
       <div class="md:grid md:grid-cols-2 md:gap-8 md:items-start">
@@ -152,8 +160,8 @@ const BODY = 'text-base md:text-lg text-white/80';
               </h2>
               <p class={HERO_LABEL}>The super-grid</p>
               <p class={BODY}>
-                Pylons carry generation south through the spine of England,
-                then step down for the final mile.
+                Dogger Bank's offshore wind comes ashore at Creyke Beck, then
+                runs south at 400&nbsp;kV to the cities that need it.
               </p>
             </div>
           </section>

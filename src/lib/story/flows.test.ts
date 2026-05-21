@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GB_LAT_BOUNDS, GB_LON_BOUNDS, STEPS } from './steps';
-import { FLOWS, flowGreatCircle } from './flows';
+import { FLOWS, flowGreatCircle, flowPath } from './flows';
 
 describe('FLOWS config', () => {
   it('flow IDs are unique and match the FLOWS keys', () => {
@@ -9,9 +9,10 @@ describe('FLOWS config', () => {
     }
   });
 
-  it('every flow source and target sits inside GB bounds', () => {
+  it('every flow source, target and waypoint sits inside GB bounds', () => {
     for (const flow of Object.values(FLOWS)) {
-      for (const [lon, lat] of [flow.source, flow.target]) {
+      const pts = [flow.source, ...(flow.waypoints ?? []), flow.target];
+      for (const [lon, lat] of pts) {
         expect(lon).toBeGreaterThanOrEqual(GB_LON_BOUNDS[0]);
         expect(lon).toBeLessThanOrEqual(GB_LON_BOUNDS[1]);
         expect(lat).toBeGreaterThanOrEqual(GB_LAT_BOUNDS[0]);
@@ -62,5 +63,47 @@ describe('flowGreatCircle', () => {
 
   it('throws when N < 2', () => {
     expect(() => flowGreatCircle(flow, 1)).toThrow();
+  });
+});
+
+describe('flowPath (multi-hop)', () => {
+  const single = FLOWS['scot-wind-to-london']!;
+  const multi = FLOWS['dogger-to-london']!; // has 2 waypoints → 3 legs
+
+  it('endpoints equal the flow source and target', () => {
+    const p = flowPath(multi, 10);
+    const [lon0, lat0] = p[0]!;
+    const [lonN, latN] = p[p.length - 1]!;
+    expect(lon0).toBeCloseTo(multi.source[0], 4);
+    expect(lat0).toBeCloseTo(multi.source[1], 4);
+    expect(lonN).toBeCloseTo(multi.target[0], 4);
+    expect(latN).toBeCloseTo(multi.target[1], 4);
+  });
+
+  it('timestamps run strictly monotonic from 0 to 1', () => {
+    const p = flowPath(multi, 10);
+    expect(p[0]![2]).toBe(0);
+    expect(p[p.length - 1]![2]).toBe(1);
+    for (let i = 1; i < p.length; i++) {
+      expect(p[i]![2]).toBeGreaterThan(p[i - 1]![2]);
+    }
+  });
+
+  it('passes near each declared waypoint', () => {
+    const p = flowPath(multi, 24);
+    for (const [wlon, wlat] of multi.waypoints ?? []) {
+      const hit = p.some(([lon, lat]) => Math.abs(lon - wlon) < 0.05 && Math.abs(lat - wlat) < 0.05);
+      expect(hit).toBe(true);
+    }
+  });
+
+  it('a flow with no waypoints is a single leg ending at the target', () => {
+    const p = flowPath(single, 12);
+    expect(p[p.length - 1]![0]).toBeCloseTo(single.target[0], 4);
+    expect(p[p.length - 1]![1]).toBeCloseTo(single.target[1], 4);
+  });
+
+  it('throws when perLeg < 2', () => {
+    expect(() => flowPath(multi, 1)).toThrow();
   });
 });

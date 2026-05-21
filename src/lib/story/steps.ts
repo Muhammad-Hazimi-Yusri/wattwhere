@@ -81,7 +81,9 @@ export const STEPS: Readonly<Record<string, Step>> = {
     center: [-1.5, 53.0],
     zoom: 6.5,
     overlays: ['power-infra'],
-    flows: ['scot-wind-to-london', 'dogger-to-london'],
+    // Just the Dogger Bank journey here so the multi-hop path (offshore
+    // → Creyke Beck landfall → south to London) is the focus.
+    flows: ['dogger-to-london'],
   },
   'closer-look': {
     id: 'closer-look',
