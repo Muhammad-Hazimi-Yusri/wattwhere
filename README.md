@@ -4,17 +4,17 @@ A static, scrolly + dashboard explainer of the GB electricity grid and market.
 
 **Live site:** https://muhammad-hazimi-yusri.github.io/wattwhere/
 
-Status: scaffolding (v0 in progress).
+Status: v0 — scrolly explainer (`/`) + live dashboard (`/explore`).
 
 ## Stack
 
-- [Astro 5](https://astro.build) (static output) with MDX, React, Tailwind.
+- [Astro 5](https://astro.build) (static output) with React + Tailwind.
 - [MapLibre GL JS](https://maplibre.org) with [CARTO](https://carto.com/basemaps)
   Dark Matter raster basemap (no Mapbox token, no API key).
-- [deck.gl](https://deck.gl) for animated arc/trip layers.
-- [Observable Plot](https://observablehq.com/plot) for time series, d3-sankey
-  for the bill-flow diagram, [Scrollama](https://github.com/russellgoldenberg/scrollama)
-  for scroll triggers.
+- [deck.gl](https://deck.gl) for animated power-flow trip layers.
+- [Observable Plot](https://observablehq.com/plot) for the carbon-intensity
+  and fuel-mix time series, [Scrollama](https://github.com/russellgoldenberg/scrollama)
+  for the scroll triggers, and a Tailwind card strip for the bill breakdown.
 - TypeScript strict everywhere.
 
 ## Local development
