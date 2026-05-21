@@ -4,7 +4,9 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TripsLayer } from '@deck.gl/geo-layers';
 import { FLOWS, flowPath, type Flow } from '../../lib/story/flows';
 
-const TRIP_PERIOD_MS = 6_000;
+// Longer now that the journey is one ~6-stop path Dogger → London home;
+// a slower sweep keeps the trail readable end to end.
+const TRIP_PERIOD_MS = 9_000;
 const TRAIL_LENGTH = 0.25;
 
 interface TripDatum {

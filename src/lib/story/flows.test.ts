@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GB_LAT_BOUNDS, GB_LON_BOUNDS, STEPS } from './steps';
-import { FLOWS, flowGreatCircle, flowPath } from './flows';
+import { FLOWS, flowGreatCircle, flowPath, type Flow } from './flows';
 
 describe('FLOWS config', () => {
   it('flow IDs are unique and match the FLOWS keys', () => {
@@ -38,8 +38,18 @@ describe('STEPS.flows', () => {
   });
 });
 
+const SINGLE_LEG: Flow = {
+  id: 'test-single',
+  sourceName: 'a',
+  source: [-4.27, 55.69],
+  targetName: 'b',
+  target: [-0.1, 51.5],
+  fuelKind: 'wind',
+  colour: '#56B4E9',
+};
+
 describe('flowGreatCircle', () => {
-  const flow = FLOWS['scot-wind-to-london']!;
+  const flow = FLOWS['dogger-journey']!;
 
   it('returns N points with timestamps strictly monotonic in [0, 1]', () => {
     const samples = flowGreatCircle(flow, 16);
@@ -51,7 +61,7 @@ describe('flowGreatCircle', () => {
     }
   });
 
-  it('the first and last points equal the source and target', () => {
+  it('the first and last points equal the source and target (ignores waypoints)', () => {
     const samples = flowGreatCircle(flow, 8);
     const [lon0, lat0] = samples[0]!;
     const [lonN, latN] = samples[samples.length - 1]!;
@@ -67,8 +77,7 @@ describe('flowGreatCircle', () => {
 });
 
 describe('flowPath (multi-hop)', () => {
-  const single = FLOWS['scot-wind-to-london']!;
-  const multi = FLOWS['dogger-to-london']!; // has 2 waypoints → 3 legs
+  const multi = FLOWS['dogger-journey']!; // 4 waypoints → 5 legs
 
   it('endpoints equal the flow source and target', () => {
     const p = flowPath(multi, 10);
@@ -97,10 +106,20 @@ describe('flowPath (multi-hop)', () => {
     }
   });
 
+  it('heads steadily south after the landfall waypoint', () => {
+    // From Creyke Beck (waypoint 0) onward the journey runs south to
+    // London — every declared stop should be at or below the previous
+    // latitude.
+    const stops = [...(multi.waypoints ?? []), multi.target];
+    for (let i = 1; i < stops.length; i++) {
+      expect(stops[i]![1]).toBeLessThanOrEqual(stops[i - 1]![1]);
+    }
+  });
+
   it('a flow with no waypoints is a single leg ending at the target', () => {
-    const p = flowPath(single, 12);
-    expect(p[p.length - 1]![0]).toBeCloseTo(single.target[0], 4);
-    expect(p[p.length - 1]![1]).toBeCloseTo(single.target[1], 4);
+    const p = flowPath(SINGLE_LEG, 12);
+    expect(p[p.length - 1]![0]).toBeCloseTo(SINGLE_LEG.target[0], 4);
+    expect(p[p.length - 1]![1]).toBeCloseTo(SINGLE_LEG.target[1], 4);
   });
 
   it('throws when perLeg < 2', () => {

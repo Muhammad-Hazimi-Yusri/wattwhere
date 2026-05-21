@@ -1,15 +1,16 @@
 /**
- * Hardcoded representative power flows for the deck.gl TripsLayer on /.
+ * The single "follow one electron" flow for the deck.gl TripsLayer on /.
  *
- * v0 SLC: no live API. Five illustrative source→destination pairs that
- * pair with the narrative steps (Scottish wind south, North-Sea wind to
- * London, north-west nuclear corridor, north-Wales corridor, French
- * interconnector landfall). The narrative copy frames these as
- * representative, not measured.
+ * v0 SLC: no live API. One illustrative end-to-end journey — Dogger Bank
+ * offshore wind comes ashore at the Creyke Beck substation, runs south
+ * down the 400 kV transmission spine, and steps down through London's
+ * distribution network to a home. The path bends at the real landfall
+ * point rather than cutting a straight line; that kink is the story.
+ * The narrative copy frames it as representative, not measured.
  */
 import { PLANT_SOURCE_COLOURS } from '../style/palette';
 
-export type FuelKind = 'wind' | 'nuclear' | 'gas' | 'interconnector';
+export type FuelKind = 'wind';
 
 export interface Flow {
   readonly id: string;
@@ -20,70 +21,28 @@ export interface Flow {
   /**
    * Optional intermediate stops between source and target, in order.
    * Used to trace the real grid hierarchy (generation → transmission
-   * landfall → demand) instead of a single straight arc.
+   * landfall → grid supply point → demand) instead of a single arc.
    */
   readonly waypoints?: ReadonlyArray<readonly [number, number]>;
   readonly fuelKind: FuelKind;
   readonly colour: string;
 }
 
-const INTERCONNECTOR_COLOUR = '#9b9b9b';
-
 export const FLOWS: Readonly<Record<string, Flow>> = {
-  'scot-wind-to-london': {
-    id: 'scot-wind-to-london',
-    sourceName: 'Whitelee + Clyde wind cluster',
-    source: [-4.27, 55.69],
-    targetName: 'Greater London',
-    target: [-0.1, 51.5],
-    fuelKind: 'wind',
-    colour: PLANT_SOURCE_COLOURS.wind!,
-  },
-  // Flagship "real journey" flow: Dogger Bank A/B connect to the GB grid
-  // at the Creyke Beck 400 kV substation (East Riding), then power runs
-  // south down the transmission spine to London's distribution network.
-  // The path bends at the real landfall point rather than cutting a
-  // straight line — that kink is the story (offshore generation comes
-  // ashore at a specific node, it doesn't beeline to the city).
-  'dogger-to-london': {
-    id: 'dogger-to-london',
-    sourceName: 'Dogger Bank offshore wind',
-    source: [1.95, 54.85],
-    targetName: 'London (distribution)',
-    target: [-0.1, 51.5],
+  'dogger-journey': {
+    id: 'dogger-journey',
+    sourceName: 'Dogger Bank A offshore wind',
+    source: [1.96, 54.76], // the rendered Dogger Bank A plant dot
+    targetName: 'a London home',
+    target: [-0.12, 51.505], // lands on real inner-London substations
     waypoints: [
-      [-0.42, 53.82], // Creyke Beck 400 kV substation — Dogger Bank landfall
-      [-0.78, 52.65], // transmission corridor south through the East Midlands
+      [-0.416, 53.801], // Creyke Beck substation — Dogger Bank landfall
+      [-0.78, 52.65], // East Midlands 400 kV corridor
+      [-0.25, 51.75], // London approach
+      [-0.06, 51.59], // grid supply point on London's edge
     ],
     fuelKind: 'wind',
     colour: PLANT_SOURCE_COLOURS.wind!,
-  },
-  'heysham-to-manchester': {
-    id: 'heysham-to-manchester',
-    sourceName: 'Heysham nuclear',
-    source: [-2.91, 54.03],
-    targetName: 'Manchester',
-    target: [-2.24, 53.48],
-    fuelKind: 'nuclear',
-    colour: PLANT_SOURCE_COLOURS.nuclear!,
-  },
-  'wylfa-to-midlands': {
-    id: 'wylfa-to-midlands',
-    sourceName: 'North Wales corridor',
-    source: [-4.48, 53.42],
-    targetName: 'West Midlands',
-    target: [-1.9, 52.48],
-    fuelKind: 'nuclear',
-    colour: PLANT_SOURCE_COLOURS.nuclear!,
-  },
-  'ifa-to-south-coast': {
-    id: 'ifa-to-south-coast',
-    sourceName: 'IFA interconnector (France)',
-    source: [1.13, 50.93],
-    targetName: 'Sellindge (south coast)',
-    target: [0.98, 51.1],
-    fuelKind: 'interconnector',
-    colour: INTERCONNECTOR_COLOUR,
   },
 };
 

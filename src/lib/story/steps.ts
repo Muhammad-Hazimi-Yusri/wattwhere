@@ -10,11 +10,17 @@
  * catch typos before they ship.
  */
 
-export type OverlaySet = 'carbon-regions' | 'power-infra';
+export type OverlaySet =
+  | 'carbon-regions'
+  | 'power-plants'
+  | 'power-lines'
+  | 'power-substations';
 
 export const OVERLAY_SETS: ReadonlyArray<OverlaySet> = [
   'carbon-regions',
-  'power-infra',
+  'power-plants',
+  'power-lines',
+  'power-substations',
 ] as const;
 
 /**
@@ -22,12 +28,18 @@ export const OVERLAY_SETS: ReadonlyArray<OverlaySet> = [
  * src/components/map/style.ts. Layer IDs are the public contract —
  * steps.test.ts asserts every one exists in buildStyle()'s output.
  *
+ * Power infra is split per layer so each journey step can emphasise just
+ * one rung of the grid (plants at the source, lines on the transmission
+ * leg, substations as the power reaches the street).
+ *
  * Note: 'carto-base' and 'carto-labels' (basemap + labels) are always
  * visible and never appear here.
  */
 export const OVERLAY_LAYER_IDS: Record<OverlaySet, ReadonlyArray<string>> = {
   'carbon-regions': ['gb-carbon-region-fill', 'gb-carbon-region-outline'],
-  'power-infra': ['gb-power-line', 'gb-power-substation', 'gb-power-plant'],
+  'power-plants': ['gb-power-plant'],
+  'power-lines': ['gb-power-line'],
+  'power-substations': ['gb-power-substation'],
 };
 
 export interface Step {
@@ -47,69 +59,84 @@ export interface Step {
 
 /** Camera + bounds limits — shared with StoryMap's MapLibre constructor. */
 export const MAPLIBRE_MIN_ZOOM = 4;
-export const MAPLIBRE_MAX_ZOOM = 14;
+export const MAPLIBRE_MAX_ZOOM = 16;
 export const GB_LON_BOUNDS: readonly [number, number] = [-9, 2];
 export const GB_LAT_BOUNDS: readonly [number, number] = [49, 61];
 
+// The "follow one electron" journey: a single guided dive from Dogger
+// Bank to a London home. Zoom climbs monotonically through `home`; the
+// centre tracks south. The single `dogger-journey` flow follows the
+// path on steps 2–6 and gives the dive its direction.
 export const STEPS: Readonly<Record<string, Step>> = {
-  intro: {
-    id: 'intro',
-    center: [-2.5, 54.5],
-    zoom: 5.5,
-    overlays: [],
-    flows: [],
-  },
-  regions: {
-    id: 'regions',
+  overview: {
+    id: 'overview',
+    // Whole-GB establishing shot with the live carbon-intensity fill.
     center: [-2.5, 54.5],
     zoom: 5.5,
     overlays: ['carbon-regions'],
     flows: [],
   },
-  plants: {
-    id: 'plants',
-    center: [-2.5, 55.5],
-    zoom: 6,
-    overlays: ['power-infra'],
-    flows: ['scot-wind-to-london', 'dogger-to-london'],
+  generation: {
+    id: 'generation',
+    // North Sea, nudged west of Dogger Bank so the Yorkshire coast (the
+    // landfall the flow heads for) stays in frame alongside the turbines.
+    center: [1.15, 54.85],
+    zoom: 6.8,
+    overlays: ['power-plants'],
+    flows: ['dogger-journey'],
   },
-  supergrid: {
-    id: 'supergrid',
-    // Yorkshire / Midlands corridor — the densest 400 kV spine.
-    // Zoom 6.5 is monotonic between plants (6) and closer-look (9)
-    // so the smoothstep LERP feels like a steady camera push south.
-    center: [-1.5, 53.0],
-    zoom: 6.5,
-    overlays: ['power-infra'],
-    // Just the Dogger Bank journey here so the multi-hop path (offshore
-    // → Creyke Beck landfall → south to London) is the focus.
-    flows: ['dogger-to-london'],
+  transmission: {
+    id: 'transmission',
+    // The 400 kV corridor heading south; Creyke Beck landfall sits near
+    // the top of frame.
+    center: [-0.45, 53.4],
+    zoom: 7.0,
+    overlays: ['power-lines'],
+    flows: ['dogger-journey'],
   },
-  'closer-look': {
-    id: 'closer-look',
-    center: [-0.1, 51.5],
-    zoom: 9,
-    overlays: ['power-infra'],
-    flows: ['heysham-to-manchester', 'wylfa-to-midlands', 'ifa-to-south-coast'],
+  'grid-supply': {
+    id: 'grid-supply',
+    // London's northern edge — where transmission hands over to the
+    // distribution network. Lines + substations both lit.
+    center: [-0.05, 51.6],
+    zoom: 9.8,
+    overlays: ['power-lines', 'power-substations'],
+    flows: ['dogger-journey'],
+  },
+  distribution: {
+    id: 'distribution',
+    center: [-0.11, 51.52],
+    zoom: 12.5,
+    overlays: ['power-substations'],
+    flows: ['dogger-journey'],
+  },
+  home: {
+    id: 'home',
+    // Street level: ~81 real OSM substations in frame; the flow ends here.
+    center: [-0.12, 51.505],
+    zoom: 15,
+    overlays: ['power-substations'],
+    flows: ['dogger-journey'],
   },
   bill: {
     id: 'bill',
-    // Bookends the story: same camera as `intro`, no overlays or flows
-    // so the sticky map doesn't compete with the bill cards in the
-    // article column.
-    center: [-2.5, 54.5],
-    zoom: 5.5,
+    // Stay over the home (z14, gentle exhale — not a pull-back to GB,
+    // which would re-introduce the "pop out"). Overlays + flow off so
+    // the map recedes behind the bill cards in the article column.
+    center: [-0.12, 51.505],
+    zoom: 14,
     overlays: [],
     flows: [],
   },
 };
 
 export const STEP_ORDER: ReadonlyArray<string> = [
-  'intro',
-  'regions',
-  'plants',
-  'supergrid',
-  'closer-look',
+  'overview',
+  'generation',
+  'transmission',
+  'grid-supply',
+  'distribution',
+  'home',
   'bill',
 ];
 
