@@ -65,6 +65,7 @@ function powerLayers(): LayerSpecification[] {
       'circle-stroke-width': 0.5,
       'circle-opacity': 0.9,
       'circle-opacity-transition': { duration: 600, delay: 0 },
+      'circle-stroke-opacity-transition': { duration: 600, delay: 0 },
     },
   };
 
@@ -97,6 +98,7 @@ function powerLayers(): LayerSpecification[] {
     'circle-stroke-width': 1,
     'circle-opacity': 0.9,
     'circle-opacity-transition': { duration: 600, delay: 0 },
+    'circle-stroke-opacity-transition': { duration: 600, delay: 0 },
   };
 
   const plants: LayerSpecification = {
