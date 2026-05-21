@@ -56,7 +56,7 @@ abstractions beyond what the current commit requires.
 Footer must always credit:
 
 - Map © OpenStreetMap contributors (ODbL).
-- Basemap © Protomaps.
+- Basemap tiles © CARTO.
 - BMRS data © Elexon Limited [current year].
 - Carbon Intensity © National Grid ESO (CC-BY 4.0).
 

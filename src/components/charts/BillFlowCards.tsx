@@ -1,11 +1,10 @@
-import { BILL, type SankeyLink } from '../../lib/billing/bill-flow';
+import { BILL, type BillLink } from '../../lib/billing/bill-flow';
 
 /**
- * Wrapped-style replacement for the d3-sankey bill view. One card per
- * cost bucket showing the pence, where it goes, and a one-line context.
- * Mobile is a horizontal scroll-snap strip (touch-action: pan-x to
- * avoid gesture conflict with the page's vertical scroll); desktop is
- * a 3- or 4-col grid.
+ * Wrapped-style bill breakdown: one card per cost bucket showing the
+ * pence, where it goes, and a one-line context. Mobile is a horizontal
+ * scroll-snap strip (touch-action: pan-x to avoid gesture conflict with
+ * the page's vertical scroll); desktop is a 3- or 4-col grid.
  */
 
 interface CardSpec {
@@ -64,7 +63,7 @@ function buildCards(): CardSpec[] {
   for (const l of BILL.links) {
     if (l.source === 'you') peneByBucket.set(l.target, l.valuePence);
   }
-  const bucketToRecipient = new Map<string, SankeyLink>();
+  const bucketToRecipient = new Map<string, BillLink>();
   for (const l of BILL.links) {
     if (l.source !== 'you' && !bucketToRecipient.has(l.source)) {
       bucketToRecipient.set(l.source, l);

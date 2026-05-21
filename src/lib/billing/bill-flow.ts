@@ -14,7 +14,7 @@
  * a per-bucket card strip — BillFlowCards.tsx is the v0 renderer.
  */
 
-export interface SankeyNode {
+export interface BillNode {
   readonly id: string;
   readonly label: string;
   /**
@@ -25,7 +25,7 @@ export interface SankeyNode {
   readonly compactLabel?: string;
 }
 
-export interface SankeyLink {
+export interface BillLink {
   readonly source: string;
   readonly target: string;
   /** Pence per £1 of bill. */
@@ -33,8 +33,8 @@ export interface SankeyLink {
 }
 
 export interface BillBreakdown {
-  readonly nodes: ReadonlyArray<SankeyNode>;
-  readonly links: ReadonlyArray<SankeyLink>;
+  readonly nodes: ReadonlyArray<BillNode>;
+  readonly links: ReadonlyArray<BillLink>;
   readonly subtotalPence: number;
 }
 
