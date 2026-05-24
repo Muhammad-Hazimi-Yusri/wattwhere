@@ -1,32 +1,19 @@
 ---
 import '../styles/global.css';
-import StoryMap from '../components/story/StoryMap.tsx';
-import ScrollyController from '../components/story/ScrollyController.tsx';
-import StoryProgress from '../components/story/StoryProgress.tsx';
-import StepProgress from '../components/story/StepProgress.tsx';
 import BillFlowCards from '../components/charts/BillFlowCards.tsx';
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 
-// Common Tailwind class strings for each section + card. Kept here so
-// individual sections only differ in `data-step`, accent, and copy —
-// the layout shape stays a single source of truth.
-const SECTION_BASE =
-  'min-h-[100dvh] flex flex-col justify-end pb-8 md:block md:min-h-screen md:pb-0';
-const SECTION_SHORT =
-  'min-h-[80dvh] flex flex-col justify-end pb-8 md:block md:min-h-[60vh] md:pb-0';
-const CARD =
-  'space-y-3 md:space-y-4 rounded-lg bg-black/65 p-5 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0';
-const EYEBROW =
-  'text-[11px] font-semibold uppercase tracking-[0.18em]';
-const HERO_L =
-  'text-[4rem] leading-[1.05] md:text-[6.5rem] font-semibold tracking-tight tabular-nums';
-const HERO_XL =
-  'text-[5.5rem] leading-none md:text-[8.5rem] font-semibold tracking-tight tabular-nums';
-const HERO_LABEL = 'text-xl md:text-3xl font-medium text-white';
-const BODY = 'text-base md:text-lg text-white/80';
+// Shared typography. Panels differ only in accent + copy.
+const PANEL =
+  'panel-reveal flex min-h-[100svh] flex-col justify-center max-w-2xl mx-auto px-6 py-16';
+const EYEBROW = 'text-[11px] font-semibold uppercase tracking-[0.18em]';
+const HERO =
+  'mt-3 text-[4rem] leading-[1.05] md:text-[7rem] font-semibold tracking-tight tabular-nums';
+const HERO_LABEL = 'mt-3 text-xl md:text-3xl font-medium text-white';
+const BODY = 'mt-3 text-base md:text-lg text-white/80';
 ---
 
 <!doctype html>
@@ -36,228 +23,84 @@ const BODY = 'text-base md:text-lg text-white/80';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="A scrolly explainer of the GB electricity grid and market."
+      content="Where Britain's electricity comes from, where it goes, and what it costs."
     />
     <title>wattwhere</title>
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
   </head>
   <body>
-    <main class="mx-auto max-w-7xl px-4 md:px-8">
-      <header class="pt-6 pb-2 md:py-10">
-        <!--
-          On mobile the title overlays the full-bleed map, so it needs
-          a backing to stay legible. inline-block keeps the scrim tight
-          to the text; on md+ the header sits above the grid over the
-          page background, so the chrome drops away.
-        -->
-        <div class="inline-block rounded-lg bg-black/65 px-4 py-3 backdrop-blur md:bg-transparent md:p-0 md:backdrop-blur-0">
-          <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
-            wattwhere
-          </h1>
-          <p class="mt-1 text-sm md:text-base text-[color:var(--muted)]">
-            A scrolly explainer of the GB electricity grid.
-          </p>
-        </div>
-      </header>
+    <main>
+      <section class={PANEL}>
+        <h1 class="text-5xl md:text-7xl font-semibold tracking-tight">wattwhere</h1>
+        <p class="mt-4 text-lg md:text-xl text-[color:var(--muted)]">
+          Where Britain's electricity comes from, where it goes, and what it
+          costs — in a few numbers.
+        </p>
+        <p class="mt-8 text-sm uppercase tracking-[0.18em] text-white/40">
+          Scroll ↓
+        </p>
+      </section>
 
-      <div class="md:grid md:grid-cols-2 md:gap-8 md:items-start">
-        <!--
-          Map sits behind everything on <md (fixed inset-0 -z-10) and
-          inside the grid as a sticky right column on md+. Same component
-          instance either way; ResizeObserver in StoryMap re-measures
-          across the breakpoint.
-        -->
-        <aside
-          class="fixed inset-0 -z-10 h-[100dvh] w-screen md:relative md:inset-auto md:sticky md:top-4 md:order-2 md:z-10 md:h-[calc(100vh-2rem)] md:w-auto"
-        >
-          <StoryMap client:only="react" />
-        </aside>
+      <section class={PANEL} style="--accent: #56B4E9">
+        <p class={EYEBROW} style="color: var(--accent)">01 · The source</p>
+        <h2 class={HERO} style="color: var(--accent)" aria-label="around three point six gigawatts">
+          3.6&nbsp;GW
+        </h2>
+        <p class={HERO_LABEL}>Dogger Bank</p>
+        <p class={BODY}>
+          The world's largest offshore wind farm, around 130&nbsp;km off the
+          Yorkshire coast.
+        </p>
+      </section>
 
-        <article class="md:order-1 md:py-12 md:space-y-32 max-w-prose">
-          <!--
-            One guided journey: follow a unit of power from Dogger Bank
-            offshore wind down to a London home, then the bill. The
-            single dogger-journey flow tracks the path on the middle
-            steps; the camera dives. overview is SSR-baked with
-            data-seen='true' so the first card doesn't flash opacity 0
-            on hydration (the IO still observes it — a no-op).
-          -->
-          <section
-            data-step="overview"
-            data-seen="true"
-            style="--step-accent: #1a9850"
-            class={SECTION_BASE}
+      <section class={PANEL} style="--accent: #ef8a62">
+        <p class={EYEBROW} style="color: var(--accent)">02 · Transmission</p>
+        <h2 class={HERO} style="color: var(--accent)" aria-label="four hundred kilovolts">
+          400&nbsp;kV
+        </h2>
+        <p class={HERO_LABEL}>The super-grid</p>
+        <p class={BODY}>
+          High-voltage lines carry that power hundreds of miles south to where
+          it's used.
+        </p>
+      </section>
+
+      <section class={PANEL} style="--accent: #58a6ff">
+        <p class={EYEBROW} style="color: var(--accent)">03 · Your home</p>
+        <h2 class={HERO} style="color: var(--accent)" aria-label="two hundred and thirty volts">
+          230&nbsp;V
+        </h2>
+        <p class={HERO_LABEL}>At the socket</p>
+        <p class={BODY}>
+          Substations step it down, again and again, to the voltage your home
+          runs on.
+        </p>
+      </section>
+
+      <section class={PANEL} style="--accent: #fee08b">
+        <p class={EYEBROW} style="color: var(--accent)">04 · Your bill</p>
+        <h2 class={HERO} style="color: var(--accent)" aria-label="one pound">£1</h2>
+        <p class={HERO_LABEL}>Where each pound goes</p>
+        <p class={BODY}>
+          Only part pays for the energy itself — the rest is network, policy,
+          supplier costs, and VAT.
+        </p>
+        <BillFlowCards />
+        <p class="mt-8">
+          <a
+            href={`${base}explore`}
+            class="inline-block rounded-md border border-white/15 px-5 py-2.5 text-sm font-medium hover:bg-white/5"
           >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                01 · Right now
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="about seventy percent"
-              >
-                ~70%
-              </h2>
-              <p class={HERO_LABEL}>Low-carbon today</p>
-              <p class={BODY}>
-                Follow one unit of Britain's power from the turbine to your
-                front door.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="generation"
-            style="--step-accent: #56B4E9"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                02 · The source
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="around three point six gigawatts"
-              >
-                3.6&nbsp;GW
-              </h2>
-              <p class={HERO_LABEL}>Dogger Bank</p>
-              <p class={BODY}>
-                The world's largest offshore wind farm, around 130&nbsp;km
-                off the Yorkshire coast.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="transmission"
-            style="--step-accent: #ef8a62"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                03 · Transmission
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="four hundred kilovolts"
-              >
-                400&nbsp;kV
-              </h2>
-              <p class={HERO_LABEL}>The super-grid</p>
-              <p class={BODY}>
-                Ashore at Creyke Beck, then driven south at 400,000 volts.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="grid-supply"
-            style="--step-accent: #67a9cf"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                04 · Into the city
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="one hundred and thirty-two kilovolts"
-              >
-                132&nbsp;kV
-              </h2>
-              <p class={HERO_LABEL}>Grid supply point</p>
-              <p class={BODY}>
-                London's edge, where the transmission grid hands power to the
-                distribution network.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="distribution"
-            style="--step-accent: #CC79A7"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                05 · Distribution
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="eleven kilovolts"
-              >
-                11&nbsp;kV
-              </h2>
-              <p class={HERO_LABEL}>Primary substation</p>
-              <p class={BODY}>
-                Stepped down and threaded under the streets to neighbourhood
-                substations.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="home"
-            style="--step-accent: #58a6ff"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                06 · The last metre
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="two hundred and thirty volts"
-              >
-                230&nbsp;V
-              </h2>
-              <p class={HERO_LABEL}>Your home</p>
-              <p class={BODY}>
-                A kerbside transformer drops it to the voltage at your
-                sockets.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="bill"
-            style="--step-accent: #fee08b"
-            class={SECTION_SHORT}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                07 · The bill
-              </p>
-              <h2 class={HERO_XL} style="color: var(--step-accent)" aria-label="one pound">£1</h2>
-              <p class={HERO_LABEL}>Where each pound goes</p>
-              <p class={BODY}>
-                Only part pays for the energy itself — the rest funds the
-                network, government schemes, the supplier's costs, and VAT.
-              </p>
-              <BillFlowCards client:visible />
-              <p class="mt-6">
-                <a
-                  href={`${base}explore`}
-                  class="inline-block rounded-md border border-white/15 px-4 py-2 text-sm font-medium hover:bg-white/5"
-                >
-                  Open the live dashboard →
-                </a>
-              </p>
-            </div>
-          </section>
-        </article>
-      </div>
+            Explore the live map →
+          </a>
+        </p>
+      </section>
     </main>
 
-    <ScrollyController client:only="react" />
-    <StoryProgress client:only="react" />
-    <StepProgress client:only="react" />
+    <footer class="mx-auto max-w-2xl px-6 py-10 text-[11px] leading-relaxed text-white/45">
+      Map © OpenStreetMap contributors (ODbL), basemap © CARTO. BMRS data ©
+      Elexon Limited. Carbon Intensity © National Grid ESO (CC-BY 4.0). Bill
+      breakdown illustrative, after Ofgem's default tariff cap.
+    </footer>
   </body>
 </html>
