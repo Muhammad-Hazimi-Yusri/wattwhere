@@ -75,81 +75,70 @@ const BODY = 'text-base md:text-lg text-white/80';
 
         <article class="md:order-1 md:py-12 md:space-y-32 max-w-prose">
           <!--
-            intro is SSR-baked with data-seen='true' so the first card
-            doesn't flash opacity 0 on hydration. ScrollyController's IO
-            still observes it; setting an already-true attribute is a
-            no-op.
+            One guided journey: follow a unit of power from Dogger Bank
+            offshore wind down to a London home, then the bill. The
+            single dogger-journey flow tracks the path on the middle
+            steps; the camera dives. overview is SSR-baked with
+            data-seen='true' so the first card doesn't flash opacity 0
+            on hydration (the IO still observes it — a no-op).
           -->
           <section
-            data-step="intro"
+            data-step="overview"
             data-seen="true"
-            style="--step-accent: #58a6ff"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                01 · Britain's grid
-              </p>
-              <h2
-                class={HERO_L}
-                style="color: var(--step-accent)"
-                aria-label="thirty gigawatts"
-              >
-                30&nbsp;GW
-              </h2>
-              <p class={HERO_LABEL}>Typical national demand</p>
-              <p class={BODY}>
-                One nationwide network moves power from where it's generated
-                to where it's used.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="regions"
-            style="--step-accent: #fee08b"
-            class={SECTION_BASE}
-          >
-            <div class={CARD}>
-              <p class={EYEBROW} style="color: var(--step-accent)">
-                02 · Distribution
-              </p>
-              <h2 class={HERO_XL} style="color: var(--step-accent)">14</h2>
-              <p class={HERO_LABEL}>Distribution networks</p>
-              <p class={BODY}>
-                Below 132&nbsp;kV the grid splits into 14 DNO regions — the
-                same shapes the National Grid scores for live carbon
-                intensity.
-              </p>
-            </div>
-          </section>
-
-          <section
-            data-step="plants"
             style="--step-accent: #1a9850"
             class={SECTION_BASE}
           >
             <div class={CARD}>
               <p class={EYEBROW} style="color: var(--step-accent)">
-                03 · Generation
+                01 · Right now
               </p>
-              <h2 class={HERO_L} style="color: var(--step-accent)">70%</h2>
+              <h2
+                class={HERO_L}
+                style="color: var(--step-accent)"
+                aria-label="about seventy percent"
+              >
+                ~70%
+              </h2>
               <p class={HERO_LABEL}>Low-carbon today</p>
               <p class={BODY}>
-                Wind dominates in the north and offshore; the remaining
-                nuclear sits at Heysham, Hartlepool and Sizewell.
+                Follow one unit of Britain's power from the turbine to your
+                front door.
               </p>
             </div>
           </section>
 
           <section
-            data-step="supergrid"
+            data-step="generation"
+            style="--step-accent: #56B4E9"
+            class={SECTION_BASE}
+          >
+            <div class={CARD}>
+              <p class={EYEBROW} style="color: var(--step-accent)">
+                02 · The source
+              </p>
+              <h2
+                class={HERO_L}
+                style="color: var(--step-accent)"
+                aria-label="around three point six gigawatts"
+              >
+                3.6&nbsp;GW
+              </h2>
+              <p class={HERO_LABEL}>Dogger Bank</p>
+              <p class={BODY}>
+                The world's largest offshore wind farm, around 130&nbsp;km
+                off the Yorkshire coast.
+              </p>
+            </div>
+          </section>
+
+          <section
+            data-step="transmission"
             style="--step-accent: #ef8a62"
             class={SECTION_BASE}
           >
             <div class={CARD}>
               <p class={EYEBROW} style="color: var(--step-accent)">
-                04 · Transmission
+                03 · Transmission
               </p>
               <h2
                 class={HERO_L}
@@ -160,28 +149,79 @@ const BODY = 'text-base md:text-lg text-white/80';
               </h2>
               <p class={HERO_LABEL}>The super-grid</p>
               <p class={BODY}>
-                Dogger Bank's offshore wind comes ashore at Creyke Beck, then
-                runs south at 400&nbsp;kV to the cities that need it.
+                Ashore at Creyke Beck, then driven south at 400,000 volts.
               </p>
             </div>
           </section>
 
           <section
-            data-step="closer-look"
+            data-step="grid-supply"
             style="--step-accent: #67a9cf"
             class={SECTION_BASE}
           >
             <div class={CARD}>
               <p class={EYEBROW} style="color: var(--step-accent)">
-                05 · Last mile
+                04 · Into the city
               </p>
-              <h2 class={HERO_L} style="color: var(--step-accent)">
-                Hundreds
+              <h2
+                class={HERO_L}
+                style="color: var(--step-accent)"
+                aria-label="one hundred and thirty-two kilovolts"
+              >
+                132&nbsp;kV
               </h2>
-              <p class={HERO_LABEL}>of London substations</p>
+              <p class={HERO_LABEL}>Grid supply point</p>
               <p class={BODY}>
-                Each grey dot is a step-down transformer where high-voltage
-                transmission meets the low-voltage street network.
+                London's edge, where the transmission grid hands power to the
+                distribution network.
+              </p>
+            </div>
+          </section>
+
+          <section
+            data-step="distribution"
+            style="--step-accent: #CC79A7"
+            class={SECTION_BASE}
+          >
+            <div class={CARD}>
+              <p class={EYEBROW} style="color: var(--step-accent)">
+                05 · Distribution
+              </p>
+              <h2
+                class={HERO_L}
+                style="color: var(--step-accent)"
+                aria-label="eleven kilovolts"
+              >
+                11&nbsp;kV
+              </h2>
+              <p class={HERO_LABEL}>Primary substation</p>
+              <p class={BODY}>
+                Stepped down and threaded under the streets to neighbourhood
+                substations.
+              </p>
+            </div>
+          </section>
+
+          <section
+            data-step="home"
+            style="--step-accent: #58a6ff"
+            class={SECTION_BASE}
+          >
+            <div class={CARD}>
+              <p class={EYEBROW} style="color: var(--step-accent)">
+                06 · The last metre
+              </p>
+              <h2
+                class={HERO_L}
+                style="color: var(--step-accent)"
+                aria-label="two hundred and thirty volts"
+              >
+                230&nbsp;V
+              </h2>
+              <p class={HERO_LABEL}>Your home</p>
+              <p class={BODY}>
+                A kerbside transformer drops it to the voltage at your
+                sockets.
               </p>
             </div>
           </section>
@@ -193,9 +233,9 @@ const BODY = 'text-base md:text-lg text-white/80';
           >
             <div class={CARD}>
               <p class={EYEBROW} style="color: var(--step-accent)">
-                06 · Your bill
+                07 · The bill
               </p>
-              <h2 class={HERO_XL} style="color: var(--step-accent)">£1</h2>
+              <h2 class={HERO_XL} style="color: var(--step-accent)" aria-label="one pound">£1</h2>
               <p class={HERO_LABEL}>Where each pound goes</p>
               <p class={BODY}>
                 Only part pays for the energy itself — the rest funds the

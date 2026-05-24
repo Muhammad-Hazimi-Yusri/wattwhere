@@ -96,8 +96,15 @@ export default function StoryMap({
         for (const id of OVERLAY_LAYER_IDS[set]) active.add(id);
       }
       for (const [id, { prop, baseline }] of Object.entries(OVERLAY_OPACITY)) {
+        const visible = active.has(id);
         try {
-          map.setPaintProperty(id, prop, active.has(id) ? baseline : 0);
+          map.setPaintProperty(id, prop, visible ? baseline : 0);
+          // circle-opacity only fades the fill; the stroke ring has its
+          // own circle-stroke-opacity. Without this the white plant /
+          // substation rings linger on steps that should hide them.
+          if (prop === 'circle-opacity') {
+            map.setPaintProperty(id, 'circle-stroke-opacity', visible ? 1 : 0);
+          }
         } catch (e) {
           console.warn('[story-map] opacity', id, e);
         }
@@ -116,6 +123,13 @@ export default function StoryMap({
             `${prop}-transition` as never,
             { duration: 0, delay: 0 } as never,
           );
+          if (prop === 'circle-opacity') {
+            map.setPaintProperty(
+              id,
+              'circle-stroke-opacity-transition' as never,
+              { duration: 0, delay: 0 } as never,
+            );
+          }
         } catch (e) {
           console.warn('[story-map] reduced-motion transition', id, e);
         }

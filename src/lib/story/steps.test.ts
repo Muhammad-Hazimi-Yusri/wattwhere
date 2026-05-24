@@ -88,12 +88,12 @@ describe('dispatchStep / onStoryStep', () => {
   it('round-trips a step through the window event bus', () => {
     const received: Step[] = [];
     const unsubscribe = onStoryStep(({ step }) => received.push(step));
-    const step = STEPS.intro!;
+    const step = STEPS.overview!;
     dispatchStep(step);
-    dispatchStep(STEPS.plants!);
+    dispatchStep(STEPS.generation!);
     unsubscribe();
-    dispatchStep(STEPS.regions!); // should not be received after unsubscribe
-    expect(received.map((s) => s.id)).toEqual(['intro', 'plants']);
+    dispatchStep(STEPS.transmission!); // should not be received after unsubscribe
+    expect(received.map((s) => s.id)).toEqual(['overview', 'generation']);
     expect(received[0]).toBe(step);
   });
 
