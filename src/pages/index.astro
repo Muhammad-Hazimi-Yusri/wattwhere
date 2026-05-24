@@ -8,13 +8,17 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   : `${import.meta.env.BASE_URL}/`;
 
 // Shared typography. Panels differ only in accent + copy.
+// STAT_PANEL adds `panel-glow`, which draws a soft radial wash tinted by
+// the panel's --accent (see global.css) so the explainer panels carry
+// the same colour energy as the live hero.
 const PANEL =
   'panel-reveal flex min-h-[100svh] flex-col justify-center max-w-2xl mx-auto px-6 py-16';
+const STAT_PANEL = `${PANEL} panel-glow`;
 const EYEBROW = 'text-[11px] font-semibold uppercase tracking-[0.18em]';
 const HERO =
-  'mt-3 text-[4rem] leading-[1.05] md:text-[7rem] font-semibold tracking-tight tabular-nums';
-const HERO_LABEL = 'mt-3 text-xl md:text-3xl font-medium text-white';
-const BODY = 'mt-3 text-base md:text-lg text-white/80';
+  'mt-3 text-[4.5rem] leading-[0.95] md:text-[9rem] font-semibold tracking-tight tabular-nums';
+const HERO_LABEL = 'mt-4 text-2xl md:text-4xl font-medium text-white';
+const BODY = 'mt-4 text-base md:text-lg text-white/80 max-w-md';
 ---
 
 <!doctype html>
@@ -45,7 +49,7 @@ const BODY = 'mt-3 text-base md:text-lg text-white/80';
         </p>
       </section>
 
-      <section class={PANEL} style="--accent: #56B4E9">
+      <section class={STAT_PANEL} style="--accent: #56B4E9">
         <p class={EYEBROW} style="color: var(--accent)">01 · The source</p>
         <h2 class={HERO} style="color: var(--accent)" aria-label="around three point six gigawatts">
           3.6&nbsp;GW
@@ -57,7 +61,7 @@ const BODY = 'mt-3 text-base md:text-lg text-white/80';
         </p>
       </section>
 
-      <section class={PANEL} style="--accent: #ef8a62">
+      <section class={STAT_PANEL} style="--accent: #ef8a62">
         <p class={EYEBROW} style="color: var(--accent)">02 · Transmission</p>
         <h2 class={HERO} style="color: var(--accent)" aria-label="four hundred kilovolts">
           400&nbsp;kV
@@ -69,7 +73,7 @@ const BODY = 'mt-3 text-base md:text-lg text-white/80';
         </p>
       </section>
 
-      <section class={PANEL} style="--accent: #58a6ff">
+      <section class={STAT_PANEL} style="--accent: #58a6ff">
         <p class={EYEBROW} style="color: var(--accent)">03 · Your home</p>
         <h2 class={HERO} style="color: var(--accent)" aria-label="two hundred and thirty volts">
           230&nbsp;V
@@ -81,7 +85,7 @@ const BODY = 'mt-3 text-base md:text-lg text-white/80';
         </p>
       </section>
 
-      <section class={PANEL} style="--accent: #fee08b">
+      <section class={STAT_PANEL} style="--accent: #fee08b">
         <p class={EYEBROW} style="color: var(--accent)">04 · Your bill</p>
         <h2 class={HERO} style="color: var(--accent)" aria-label="one pound">£1</h2>
         <p class={HERO_LABEL}>Where each pound goes</p>

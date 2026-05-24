@@ -44,3 +44,25 @@ body {
     }
   }
 }
+
+/* Soft radial wash tinted by each panel's --accent, so the explainer
+   panels carry the same colour energy as the live hero. Sits behind the
+   panel content within the section's own stacking context. */
+.panel-glow {
+  position: relative;
+  isolation: isolate;
+}
+.panel-glow::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -10%;
+  top: 38%;
+  width: min(34rem, 80%);
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  background: radial-gradient(closest-side, var(--accent, #58a6ff), transparent 72%);
+  opacity: 0.16;
+  filter: blur(48px);
+  pointer-events: none;
+}
