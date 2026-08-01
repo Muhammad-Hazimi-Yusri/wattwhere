@@ -174,3 +174,15 @@ export function parseNationalSeries(payload: unknown): NationalSeries {
     points,
   };
 }
+
+/**
+ * The most recent point that has a settled `actual` reading — i.e. the
+ * grid "right now". Future half-hours are forecast-only (actual null),
+ * so we walk back from the end. Returns null if nothing is settled yet.
+ */
+export function latestActual(series: NationalSeries): NationalPoint | null {
+  for (let i = series.points.length - 1; i >= 0; i--) {
+    if (series.points[i]!.actual !== null) return series.points[i]!;
+  }
+  return null;
+}

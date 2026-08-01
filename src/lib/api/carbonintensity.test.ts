@@ -7,6 +7,7 @@ import {
   REGIONAL_ENDPOINT,
   fetchNational24h,
   fetchRegional,
+  latestActual,
   national24hUrl,
   parseNationalSeries,
   parseRegionalResponse,
@@ -161,5 +162,29 @@ describe('fetchNational24h', () => {
   it('throws on non-2xx', async () => {
     const fakeFetch = async () => new Response('down', { status: 502 });
     await expect(fetchNational24h({ fetchImpl: fakeFetch })).rejects.toThrow(/502/);
+  });
+});
+
+describe('latestActual', () => {
+  it('returns the most recent point with a settled actual reading', () => {
+    const series = parseNationalSeries(nationalFixture);
+    const latest = latestActual(series);
+    expect(latest).not.toBeNull();
+    expect(latest!.actual).not.toBeNull();
+    // The fixture's tail is forecast-only, so the latest actual is not the
+    // very last point.
+    const lastIdx = series.points.length - 1;
+    expect(series.points[lastIdx]!.actual).toBeNull();
+  });
+
+  it('returns null when no point has an actual', () => {
+    const series = {
+      from: 'a',
+      to: 'b',
+      points: [
+        { from: 'a', to: 'b', forecast: 100, actual: null, index: 'low' as const },
+      ],
+    };
+    expect(latestActual(series)).toBeNull();
   });
 });
