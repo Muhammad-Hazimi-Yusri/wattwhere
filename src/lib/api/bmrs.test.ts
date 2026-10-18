@@ -7,7 +7,10 @@ import {
   FUEL_TYPES,
   fetchFuelInst24h,
   fuelInst24hUrl,
+  latestPoint,
+  lowCarbonShare,
   parseFuelInstResponse,
+  totalMW,
 } from './bmrs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -114,5 +117,36 @@ describe('fetchFuelInst24h', () => {
   it('throws on non-2xx', async () => {
     const fakeFetch = async () => new Response('down', { status: 502 });
     await expect(fetchFuelInst24h({ fetchImpl: fakeFetch })).rejects.toThrow(/502/);
+  });
+});
+
+describe('totalMW / lowCarbonShare / latestPoint', () => {
+  const point = {
+    time: 't',
+    fuels: { WIND: 6000, NUCLEAR: 4000, CCGT: 8000, INTERCONNECTOR: 2000 } as Record<string, number>,
+  };
+
+  it('totalMW sums every fuel', () => {
+    expect(totalMW(point)).toBe(20000);
+  });
+
+  it('lowCarbonShare counts nuclear + renewables, not gas or interconnectors', () => {
+    // (6000 wind + 4000 nuclear) / 20000 = 0.5
+    expect(lowCarbonShare(point)).toBeCloseTo(0.5);
+  });
+
+  it('lowCarbonShare is 0 for an empty point', () => {
+    expect(lowCarbonShare({ time: 't', fuels: {} })).toBe(0);
+  });
+
+  it('latestPoint returns the last point of the fixture series', () => {
+    const series = parseFuelInstResponse(fixture);
+    const last = latestPoint(series);
+    expect(last).not.toBeNull();
+    expect(last!.time).toBe(series.points[series.points.length - 1]!.time);
+  });
+
+  it('latestPoint returns null for an empty series', () => {
+    expect(latestPoint({ from: 'a', to: 'b', points: [] })).toBeNull();
   });
 });

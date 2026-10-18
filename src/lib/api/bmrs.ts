@@ -69,6 +69,45 @@ interface Fetchable {
 }
 
 /**
+ * Fuels counted as low-carbon for the "% low-carbon right now" headline.
+ * Nuclear + renewables + biomass; gas/coal/oil are excluded, and
+ * interconnectors are excluded because their carbon depends on the
+ * exporting grid (we don't claim it either way).
+ */
+export const LOW_CARBON_FUELS: ReadonlySet<FuelType> = new Set<FuelType>([
+  'WIND',
+  'OFFSHORE_WIND',
+  'SOLAR',
+  'NUCLEAR',
+  'HYDRO',
+  'PUMP_STORAGE',
+  'BIOMASS',
+]);
+
+/** Total generation (MW) across all fuels at a point. */
+export function totalMW(point: FuelInstPoint): number {
+  let total = 0;
+  for (const mw of Object.values(point.fuels)) total += mw ?? 0;
+  return total;
+}
+
+/** Fraction (0–1) of generation from low-carbon fuels at a point. */
+export function lowCarbonShare(point: FuelInstPoint): number {
+  const total = totalMW(point);
+  if (total <= 0) return 0;
+  let lc = 0;
+  for (const [fuel, mw] of Object.entries(point.fuels)) {
+    if (LOW_CARBON_FUELS.has(fuel as FuelType)) lc += mw ?? 0;
+  }
+  return lc / total;
+}
+
+/** The most recent 5-min reading, or null for an empty series. */
+export function latestPoint(series: FuelInstSeries): FuelInstPoint | null {
+  return series.points.length > 0 ? series.points[series.points.length - 1]! : null;
+}
+
+/**
  * Build a 24h-window URL anchored to the previous half-hour boundary.
  * BMRS uses ISO datetimes with seconds, but the half-hour-boundary
  * grid is the natural sampling rate for a 24h chart.
